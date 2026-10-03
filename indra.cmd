@@ -11,6 +11,11 @@ if /I "%~1"=="set-server" (
   "%INDRA_ROOT%venv\Scripts\python.exe" "%INDRA_ROOT%configure_remote_server.py" %*
   exit /b %errorlevel%
 )
+if /I "%~1"=="set-context" (
+  shift
+  "%INDRA_ROOT%venv\Scripts\python.exe" "%INDRA_ROOT%configure_remote_server.py" --set-context %*
+  exit /b %errorlevel%
+)
 if /I "%~1"=="" goto ensure_backend
 if /I "%~1"=="chat" goto ensure_backend
 if /I "%~1"=="dashboard" if /I not "%~2"=="--status" if /I not "%~2"=="--stop" goto ensure_backend

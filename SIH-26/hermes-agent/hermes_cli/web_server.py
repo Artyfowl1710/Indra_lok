@@ -938,8 +938,10 @@ from hermes_cli.web_routers import (  # noqa: E402
     analytics as _analytics_routes,
     chat_ws as _chat_ws_routes,
     dashboard_ui as _dashboard_ui_routes,
+    indra_settings as _indra_settings_routes,
 )
 
+app.include_router(_indra_settings_routes.router)
 app.include_router(_files_routes.router)
 app.include_router(_git_routes.router)
 app.include_router(_local_models_routes.router)

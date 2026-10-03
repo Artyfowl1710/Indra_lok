@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { ArrowUp, Brain, Check, ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Code2, Eye, FileCode, FileSpreadsheet, FileText, Headphones, HelpCircle, Lightbulb, Mic, MicOff, MessageSquarePlus, Paperclip, Presentation, Send, ShieldAlert, Sparkles, Square, Terminal, Wrench, X } from "lucide-react";
+import { ArrowUp, Brain, Check, ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Code2, Eye, FileCode, FileSpreadsheet, FileText, Headphones, HelpCircle, Lightbulb, Mic, MicOff, MessageSquarePlus, Paperclip, Presentation, Send, Settings, ShieldAlert, Sparkles, Square, Terminal, Wrench, X } from "lucide-react";
 import { GatewayClient, type GatewayEvent } from "@/lib/gatewayClient";
 import { api } from "@/lib/api";
 import { ChatSessionList } from "@/components/ChatSessionList";
@@ -11,6 +11,7 @@ import { Markdown } from "@/components/Markdown";
 import { ArtifactViewerModal } from "@/components/ArtifactViewerModal";
 import { ArtifactsListCard } from "@/components/ArtifactsListCard";
 import { ConversationModeModal } from "@/components/ConversationModeModal";
+import { ServerSettingsModal } from "@/components/ServerSettingsModal";
 
 type Activity = { kind: "thought" | "tool"; text: string; startedAt?: number; duration?: number; id?: string; detail?: string; status?: "running" | "complete" };
 type Message = { role: "user" | "assistant"; text: string; reasoning?: string; activity?: Activity[] };
@@ -179,6 +180,28 @@ export default function ConversationPage({ isActive = true }: { isActive?: boole
   const [clarifyAnswer, setClarifyAnswer] = useState("");
   const [selectedArtifactPath, setSelectedArtifactPath] = useState<string | null>(null);
   const [conversationModeOpen, setConversationModeOpen] = useState(false);
+  const [serverSettingsOpen, setServerSettingsOpen] = useState(false);
+  const [serverStatus, setServerStatus] = useState<{
+    connected: boolean;
+    server_url: string;
+    latency_ms: number | null;
+    active_model: string;
+    context_length: number;
+    vault_docs_count: number;
+  } | null>(null);
+
+  const fetchServerStatus = useCallback(() => {
+    fetch("/api/indra/server-status")
+      .then((res) => res.json())
+      .then((data) => setServerStatus(data))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetchServerStatus();
+    const interval = setInterval(fetchServerStatus, 15000);
+    return () => clearInterval(interval);
+  }, [fetchServerStatus]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const speechRef = useRef<BrowserSpeechRecognition | null>(null);
   const clientRef = useRef<GatewayClient | null>(null);
@@ -505,6 +528,38 @@ export default function ConversationPage({ isActive = true }: { isActive?: boole
           <p className="text-sm text-[#747a80]">Ask anything in your own words</p>
         </div>
         <div className="flex items-center gap-2">
+          {/* 1-Click Server Status & Context Pill */}
+          <button
+            type="button"
+            onClick={() => setServerSettingsOpen(true)}
+            className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-semibold shadow-sm transition-all ${
+              serverStatus?.connected
+                ? "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
+                : "border-rose-200 bg-rose-50 text-rose-800 hover:bg-rose-100"
+            }`}
+            title="Configure GPU Server & Context Window (1-Click)"
+          >
+            <span
+              className={`h-2 w-2 rounded-full ${
+                serverStatus?.connected ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
+              }`}
+            />
+            <span>{serverStatus?.connected ? `GPU (${serverStatus.latency_ms ?? 0}ms)` : "Server Offline"}</span>
+            <span className="rounded bg-black/5 px-1 py-0.2 font-mono text-[10px] font-bold">
+              {serverStatus?.context_length ? `${Math.round(serverStatus.context_length / 1024)}K` : "16K"}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setServerSettingsOpen(true)}
+            className="flex items-center gap-1.5 rounded-lg border border-[#e4e6e8] bg-white px-2.5 py-1.5 text-xs font-semibold text-[#181C22] shadow-sm hover:bg-slate-50 transition-all"
+            title="Open Server & AI Settings"
+          >
+            <Settings size={14} className="text-slate-600" />
+            <span>Settings</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setSelectedArtifactPath("outputs/test_docs/rich_test_deck.pptx")}
@@ -519,6 +574,25 @@ export default function ConversationPage({ isActive = true }: { isActive?: boole
           </button>
         </div>
       </header>
+      {/* Friendly Offline Notice for Non-Technical Users */}
+      {serverStatus && !serverStatus.connected && (
+        <div className="flex items-center justify-between border-b border-amber-200 bg-amber-50/90 px-5 py-2 text-xs text-amber-950">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-amber-500 shrink-0" />
+            <span>
+              <strong>Workstation Offline:</strong> GPU server not detected at{" "}
+              <code className="rounded bg-amber-100 px-1 font-mono text-[11px]">{serverStatus.server_url}</code>.
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setServerSettingsOpen(true)}
+            className="rounded-lg bg-amber-200 px-2.5 py-1 font-bold text-amber-950 shadow-sm hover:bg-amber-300 transition-colors"
+          >
+            Configure Server in 1 Click →
+          </button>
+        </div>
+      )}
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-7 sm:px-8" aria-live="polite">
         <div className="mx-auto flex max-w-3xl flex-col gap-6">
           {isEmpty && <div className="indra-welcome">
@@ -704,6 +778,11 @@ export default function ConversationPage({ isActive = true }: { isActive?: boole
       onSendMessage={handleConversationMessage}
       lastAssistantMessage={latestMessage?.role === "assistant" ? latestMessage.text : ""}
       isModelBusy={busy}
+    />
+    <ServerSettingsModal
+      isOpen={serverSettingsOpen}
+      onClose={() => setServerSettingsOpen(false)}
+      onSaved={fetchServerStatus}
     />
   </div>;
 }

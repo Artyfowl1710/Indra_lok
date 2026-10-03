@@ -121,26 +121,28 @@ powershell -ExecutionPolicy Bypass -File .\install-indra.ps1
 
 ---
 
-## 🔗 Connecting to GPU Compute Server
+## 🔗 Connecting to GPU Compute Server & 1-Click Configuration
 
-INDRA connects to your GPU compute node using dynamic token authentication.
+INDRA connects to your GPU compute node using dynamic token authentication. Setting it up takes **under 30 seconds** with zero manual YAML file editing.
 
-### Step 1: Obtain Pairing Info from Summertime Server
-On your GPU server running `Summertime-server`, run:
-```powershell
-workbench admin export-client
-```
-Output:
-```
-============================================================
-              SUMMERTIME CLIENT EXPORT UTILITY
-============================================================
-Base URL : http://192.168.1.100:8000
-API Key  : wb_live_a1b2c3d4e5f6...
-```
+### Method 1: 1-Click Web Dashboard UI (Easiest for Non-Technical Users ⚡)
 
-### Step 2: Pair Your INDRA Client
-On your INDRA client workstation, run:
+Non-technical users do not need to open a terminal or edit config files:
+
+1. Launch INDRA Dashboard with `indra dashboard` or desktop shortcut (`http://127.0.0.1:9119`).
+2. If the GPU server is offline, an amber banner appears with a **"Configure Server in 1 Click →"** button. Or click the **Settings ⚙️** icon in the top header.
+3. In the **Server & AI Settings Modal**:
+   - Choose **Remote Host (LAN / VPN)** or **Localhost**.
+   - Paste the Server Base URL (e.g. `http://192.168.1.100:8000`) and the API Key (`wb_live_...`).
+   - Click **"Test Connection"** — live latency and detected models are verified in real time!
+   - Pick your desired **GPU VRAM Context Window** preset (`Eco 4K`, `Balanced 16K`, `Power 32K`, `Ultra 64K`).
+   - Toggle **Obsidian RAG Vault** and click **"Re-index Knowledge Vault"**.
+   - Click **"Save & Apply Settings"** — you are ready to go immediately!
+
+---
+
+### Method 2: Global CLI Pairing
+
 ```cmd
 indra set-server --url http://192.168.1.100:8000 --key wb_live_a1b2c3d4e5f6...
 ```
@@ -150,7 +152,29 @@ The automated utility will:
 2. Verify Bearer token authorization.
 3. Discover all registered models (e.g. `indra-auto`, `indra-engineer`, `indra-vision`).
 4. Perform a real-time streaming inference test.
-5. Update `SIH-26/.env` and `SIH-26/config.yaml` automatically.
+5. Update `SIH-26/.env` and `SIH-26/config.yaml` automatically without blocking.
+
+---
+
+### ⚡ 1-Click GPU VRAM Context Window Optimizer
+
+Match your inference context window to the host GPU's VRAM with a single click or command:
+
+| Preset | Context Length | Target Hardware | Memory Footprint |
+|:---|:---|:---|:---|
+| **Eco** | 4,096 tokens (4K) | 6GB - 8GB GPUs (RTX 3060/4060, laptops) | Minimal VRAM, high throughput |
+| **Balanced** | 16,384 tokens (16K) | 12GB - 16GB GPUs (RTX 3080/4070, Apple Silicon) | Recommended default for daily workflows |
+| **Power** | 32,768 tokens (32K) | 24GB GPUs (RTX 3090/4090, A5000) | Deep reasoning, multi-file code reviews |
+| **Ultra** | 65,536 tokens (64K) | 48GB - 80GB GPUs (A6000, A100, H100) | Full repository digests, massive PDF dossiers |
+
+To switch context instantly:
+```cmd
+indra set-context eco
+indra set-context balanced
+indra set-context power
+indra set-context ultra
+```
+*Or select the card directly in the Web Dashboard Settings Modal.*
 
 ---
 
