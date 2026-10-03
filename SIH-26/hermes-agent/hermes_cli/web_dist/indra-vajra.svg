@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="INDRA vajra thunderbolt">
+  <rect width="64" height="64" rx="15" fill="#181c22"/>
+  <g fill="none" stroke="#39d9ec" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 32H9m33 0h13"/>
+    <path d="M9 19v26m0-26c7 2 11 6 13 13M9 45c7-2 11-6 13-13"/>
+    <path d="M55 19v26m0-26c-7 2-11 6-13 13m13 13c-7-2-11-6-13-13"/>
+    <path d="m32 20 12 12-12 12-12-12z" fill="#39d9ec"/>
+  </g>
+  <path d="m34 24-7 10h5l-2 7 8-11h-5z" fill="#181c22"/>
+</svg>

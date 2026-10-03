@@ -1,0 +1,38 @@
+NORTH PLANT — MAINTENANCE STATUS BRIEF
+Reporting date: 29 September 2026
+Source: Fictional INDRA demo maintenance log (WO-2601 to WO-2610)
+Audience: Plant maintenance supervisor
+
+Purpose
+Give the supervisor a quick view of current maintenance workload and the jobs needing attention. Use the supplied facts only; do not claim that any issue caused a shutdown or financial loss.
+
+Key figures
+- 10 work orders in the log
+- 4 completed, 4 open, 2 in progress
+- 3 unfinished jobs are past their due date as of 29 September 2026
+- Priority distribution: 2 Critical, 3 High, 3 Medium, 2 Low
+
+Overdue unfinished jobs
+- WO-2602 — Conveyor CV-12: belt misalignment and vibration. Medium priority. Open. Due 25 September. Assigned to R. Sharma.
+- WO-2604 — Compressor AC-07: unusual bearing temperature. High priority. In progress. Due 27 September. Assigned to P. Desai.
+- WO-2608 — Fire Pump FP-01: auto-start test failed. Critical priority. In progress. Due 28 September. Assigned to R. Sharma.
+
+Near-term jobs
+- WO-2607 — Heat Exchanger HX-05: reduced flow, High priority, open, due 1 October.
+- WO-2606 — Generator DG-03: low battery voltage, Low priority, open, due 2 October.
+- WO-2610 — Water Tank TK-06: intermittent level transmitter, Medium priority, open, due 3 October.
+
+Suggested next steps for the supervisor
+- Confirm the Fire Pump FP-01 test and repair status first because it is Critical and overdue.
+- Review the compressor bearing-temperature findings and revised completion time.
+- Assign a new target date for the conveyor alignment job.
+- Check capacity for the three open jobs due in early October.
+
+Presentation instructions
+Create a concise, editable 4-slide PowerPoint for a plant supervisor:
+1. Title and reporting date
+2. Workload snapshot with a simple chart of status counts and priority counts
+3. Overdue work orders in a readable table, highlighting the Critical fire pump job
+4. Immediate actions and upcoming due dates
+
+Use clear industrial styling and large readable text. Keep charts and tables editable. Do not add stock photos, fabricated metrics, or unsupported conclusions. Add a small footer: "Fictional demo data | 29 Sep 2026".

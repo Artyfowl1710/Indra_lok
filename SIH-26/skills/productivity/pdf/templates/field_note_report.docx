@@ -1,0 +1,79 @@
+from docx import Document
+from docx.shared import Inches, Pt
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+def create_field_note_report():
+    doc = Document()
+    
+    # Title
+    title = doc.add_heading('Maintenance Field Note Report', 0)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    # Document Info
+    doc.add_paragraph()
+    info = doc.add_paragraph()
+    info.add_run('Document Type: ').add_run('Maintenance Field Note')
+    info.add_run('\nLocation: ').add_run('North Plant')
+    info.add_run('\nIncident ID: ').add_run('NP-26-041')
+    info.add_run('\nDate of Incident: ').add_run('14th September 2026')
+    
+    # Reporter Info
+    doc.add_paragraph()
+    reporter = doc.add_paragraph()
+    reporter.add_run('Reported By: ').add_run('A. Kumar (Shift Technician, Shift B: 14:00–22:00)')
+    
+    # Key Observations Table
+    doc.add_heading('Key Observations', level=1)
+    observations = [
+        ('Bearing Temperature:', '86°C'),
+        ('Vibration Level:', '9.2 mm/s'),
+        ('Oil Pressure:', '2.8 bar'),
+        ('Audible Metallic Noise:', 'Detected near drive-end bearing'),
+        ('Visual Inspection:', 'No visible smoke')
+    ]
+    
+    for observation in observations:
+        doc.add_paragraph(f"{observation[0]}: {observation[1]}")
+    
+    # Actions Taken
+    doc.add_heading('Actions Taken', level=1)
+    actions = [
+        'Compressor stopped at 15:20',
+        'Electrical supply isolated',
+        'Control Room and Maintenance Lead notified'
+    ]
+    for action in actions:
+        doc.add_paragraph(f"- {action}")
+    
+    # Recommended Next Steps
+    doc.add_heading('Recommended Next Steps', level=1)
+    next_steps = [
+        'Inspect drive-end bearing and lubrication circuit',
+        'Verify shaft alignment and vibration sensor functionality',
+        'Replace damaged parts using recorded measurements'
+    ]
+    for step in next_steps:
+        doc.add_paragraph(f"- {step}")
+    
+    # Assessment
+    doc.add_heading('Assessment', level=1)
+    doc.add_paragraph('Priority: HIGH')
+    doc.add_paragraph('Status: Isolated (Investigation Pending)')
+    
+    # Risks
+    doc.add_heading('Identified Risks', level=1)
+    risks = [
+        'Bearing seizure',
+        'Secondary shaft damage',
+        'Unplanned production stoppage',
+        'Personnel exposure during further inspection'
+    ]
+    for risk in risks:
+        doc.add_paragraph(f"- {risk}")
+    
+    import os
+    os.makedirs('outputs', exist_ok=True)
+    doc.save('outputs/field_note_report.docx')
+    return 'outputs/field_note_report.docx'
+
+create_field_note_report()

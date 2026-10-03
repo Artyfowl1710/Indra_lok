@@ -1,0 +1,252 @@
+/**
+ * neu.css — INDRA Neumorphic Shadow Utilities
+ *
+ * All neumorphic shadow states are defined here in one authoritative place.
+ * Use these semantic class names in JSX instead of Tailwind arbitrary shadow
+ * values. ThemeProvider's inline style overrides take priority at runtime.
+ *
+ * Shadow physics:
+ *   Light source: top-left   → white highlight  rgba(255,255,255,0.5–0.6)
+ *   Shadow cast:  bottom-right → cool blue-grey  rgb(163,177,198,0.6–0.7)
+ *
+ * Naming convention:
+ *   neu-raised-*   extruded / raised elements (cast shadows outward)
+ *   neu-inset-*    inset / pressed elements (cast shadows inward)
+ *   neu-accent-*   teal-accent primary interactive states
+ */
+
+/* ─── Extruded / Raised ────────────────────────────────────────────── */
+
+/** Default resting state for cards, panels, sidebar */
+.neu-raised {
+  box-shadow:
+    9px 9px 16px rgb(163 177 198 / 0.6),
+    -9px -9px 16px rgba(255 255 255 / 0.5);
+}
+
+/** Hover state — element lifts closer to light source */
+.neu-raised-hover {
+  box-shadow:
+    12px 12px 20px rgb(163 177 198 / 0.7),
+    -12px -12px 20px rgba(255 255 255 / 0.6);
+}
+
+/** Small raised — nav items, badges, small chips */
+.neu-raised-sm {
+  box-shadow:
+    5px 5px 10px rgb(163 177 198 / 0.6),
+    -5px -5px 10px rgba(255 255 255 / 0.5);
+}
+
+/** Extra-small raised — tight UI elements */
+.neu-raised-xs {
+  box-shadow:
+    3px 3px 6px rgb(163 177 198 / 0.55),
+    -3px -3px 6px rgba(255 255 255 / 0.45);
+}
+
+/* ─── Inset / Pressed ──────────────────────────────────────────────── */
+
+/** Standard inset — shallow wells, pressed buttons */
+.neu-inset {
+  box-shadow:
+    inset 6px 6px 10px rgb(163 177 198 / 0.6),
+    inset -6px -6px 10px rgba(255 255 255 / 0.5);
+}
+
+/** Deep inset — inputs, text areas, icon wells */
+.neu-inset-deep {
+  box-shadow:
+    inset 10px 10px 20px rgb(163 177 198 / 0.7),
+    inset -10px -10px 20px rgba(255 255 255 / 0.6);
+}
+
+/** Small inset — nav active states, subtle tracks */
+.neu-inset-sm {
+  box-shadow:
+    inset 3px 3px 6px rgb(163 177 198 / 0.6),
+    inset -3px -3px 6px rgba(255 255 255 / 0.5);
+}
+
+/** Extra-small inset — separator dividers, pill wells */
+.neu-inset-xs {
+  box-shadow:
+    inset 2px 2px 4px rgb(163 177 198 / 0.5),
+    inset -2px -2px 4px rgba(255 255 255 / 0.4);
+}
+
+/* ─── Accent (INDRA Teal) ──────────────────────────────────────────── */
+
+/** Primary CTA raised — teal gradient with outward shadow */
+.neu-accent-raised {
+  background: linear-gradient(135deg, #00e0c6 0%, #00c4ad 100%);
+  box-shadow:
+    6px 6px 12px rgb(163 177 198 / 0.5),
+    -6px -6px 12px rgba(255 255 255 / 0.4),
+    inset 1px 1px 2px rgba(255 255 255 / 0.25);
+  color: #1a3a38;
+}
+
+/** Primary CTA pressed — teal inset (physical press-down) */
+.neu-accent-pressed {
+  background: linear-gradient(135deg, #00c4ad 0%, #00a896 100%);
+  box-shadow:
+    inset 4px 4px 8px rgba(0 150 130 / 0.45),
+    inset -4px -4px 8px rgba(255 255 255 / 0.2);
+  color: #1a3a38;
+}
+
+/* ─── Icon Wells ───────────────────────────────────────────────────── */
+
+/** Deep-drilled icon container — makes icons look carved into surface */
+.neu-icon-well {
+  box-shadow:
+    inset 8px 8px 16px rgb(163 177 198 / 0.65),
+    inset -8px -8px 16px rgba(255 255 255 / 0.55);
+}
+
+/* ─── Focus Ring ───────────────────────────────────────────────────── */
+
+/** Replaces default browser :focus-visible for neumorphic elements */
+.neu-focus:focus-visible {
+  outline: none;
+  box-shadow:
+    9px 9px 16px rgb(163 177 198 / 0.6),
+    -9px -9px 16px rgba(255 255 255 / 0.5),
+    0 0 0 2px #e0e5ec,
+    0 0 0 4px #00e0c6;
+}
+
+.neu-focus-inset:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 6px 6px 10px rgb(163 177 198 / 0.6),
+    inset -6px -6px 10px rgba(255 255 255 / 0.5),
+    0 0 0 2px #e0e5ec,
+    0 0 0 4px #00e0c6;
+}
+
+/* ─── Transition Helper ────────────────────────────────────────────── */
+
+/** Apply to any neumorphic element that transitions shadow depth */
+.neu-transition {
+  transition:
+    box-shadow 300ms ease-out,
+    transform 300ms ease-out,
+    background 300ms ease-out;
+}
+
+.neu-transition-fast {
+  transition:
+    box-shadow 150ms ease-out,
+    transform 150ms ease-out;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* INDUSTRIAL SKEUOMORPHISM — Scoped shadow utilities                         */
+/*                                                                             */
+/* All rules are wrapped in [data-theme-name="industrial"] so they ONLY        */
+/* activate when the Industrial preset is selected. Zero cost for all other    */
+/* themes — the specificity tier is identical to the .neu-* classes above.     */
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ─── Override: rewire --neu-accent for the Industrial palette ─────────── */
+/* ThemeProvider sets these via colorOverrides, but neu-* classes reference  */
+/* --neu-accent / --neu-shadow-dark/light, which we can't reach via          */
+/* colorOverrides alone. These overrides shadow the :root defaults.          */
+[data-theme-name="industrial"] {
+  --neu-accent:       #ff4757;
+  --neu-accent-light: #ff6b78;
+  --neu-accent-dark:  #cc1f2e;
+  /* Darken the shadow slightly vs INDRA — more mechanical contrast */
+  --neu-shadow-dark:  rgb(163 177 198 / 0.7);
+  --neu-shadow-light: rgba(255 255 255 / 0.65);
+  /* Text colours — charcoal on light chassis */
+  --neu-text-primary:  #2d3436;
+  --neu-text-muted:    #4a5568;
+  --neu-text-tertiary: #6b7280;
+  --neu-text-accent:   #cc1f2e;
+}
+
+/* ─── Raised — Industrial high-contrast lift ────────────────────────── */
+
+[data-theme-name="industrial"] .ind-raised {
+  box-shadow: var(--ind-shadow-card);
+}
+
+[data-theme-name="industrial"] .ind-raised-hover {
+  box-shadow: var(--ind-shadow-floating);
+}
+
+[data-theme-name="industrial"] .ind-raised-sm {
+  box-shadow: var(--ind-shadow-raised-sm);
+}
+
+/* ─── Inset / Pressed ──────────────────────────────────────────────── */
+
+[data-theme-name="industrial"] .ind-inset {
+  box-shadow: var(--ind-shadow-recessed);
+}
+
+[data-theme-name="industrial"] .ind-pressed {
+  box-shadow: var(--ind-shadow-pressed);
+}
+
+/* ─── Primary CTA — orange-tinted shadow pair ──────────────────────── */
+
+[data-theme-name="industrial"] .ind-accent-raised {
+  background: linear-gradient(135deg, #ff4757 0%, #cc1f2e 100%);
+  box-shadow:
+    6px 6px 12px rgb(163 177 198 / 0.5),
+    -6px -6px 12px rgba(255 255 255 / 0.4),
+    inset 1px 1px 2px rgba(255 255 255 / 0.2);
+  color: #ffffff;
+}
+
+[data-theme-name="industrial"] .ind-accent-pressed {
+  background: linear-gradient(135deg, #cc1f2e 0%, #9e1a24 100%);
+  box-shadow:
+    inset 4px 4px 8px rgba(140, 20, 30, 0.5),
+    inset -4px -4px 8px rgba(255 255 255 / 0.15);
+  color: #ffffff;
+}
+
+/* ─── LED Status Indicators ────────────────────────────────────────── */
+
+[data-theme-name="industrial"] .ind-led-green {
+  background: #22c55e;
+  box-shadow: var(--ind-glow-green);
+  border-radius: 50%;
+}
+
+[data-theme-name="industrial"] .ind-led-orange {
+  background: #ff4757;
+  box-shadow: var(--ind-glow-orange);
+  border-radius: 50%;
+}
+
+[data-theme-name="industrial"] .ind-led-amber {
+  background: #d97706;
+  box-shadow: var(--ind-glow-amber);
+  border-radius: 50%;
+}
+
+/* ─── Focus ring — safety orange replaces teal ─────────────────────── */
+
+[data-theme-name="industrial"] .neu-focus:focus-visible {
+  outline: none;
+  box-shadow:
+    9px 9px 16px rgb(163 177 198 / 0.65),
+    -9px -9px 16px rgba(255 255 255 / 0.55),
+    0 0 0 2px #e0e5ec,
+    0 0 0 4px #ff4757;
+}
+
+[data-theme-name="industrial"] .neu-focus-inset:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 6px 6px 10px rgb(163 177 198 / 0.65),
+    inset -6px -6px 10px rgba(255 255 255 / 0.55),
+    0 0 0 2px #e0e5ec,
+    0 0 0 4px #ff4757;
+}

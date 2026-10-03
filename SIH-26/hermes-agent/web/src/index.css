@@ -1,0 +1,527 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+@import 'tailwindcss';
+
+/* `fonts.css` must come BEFORE `globals.css`: as of @nous-research/ui 0.14.x,
+   `globals.css` only declares the `--font-*` CSS variables (Collapse, Rules
+   Compressed/Expanded, Mondwest). The `@font-face` registrations live in
+   `fonts.css`, so without this import the DS variables resolve to font
+   families the browser never loads and components fall back to a system
+   stack (Tabs, Segmented, Typography, Buttons, etc. all look unstyled). */
+@import '@nous-research/ui/styles/fonts.css';
+@import '@nous-research/ui/styles/globals.css';
+
+/* Neumorphic shadow utility classes — single source of truth */
+@import './styles/neu.css';
+
+/* Industrial Skeuomorphism chrome — scoped to [data-theme-name="industrial"] */
+@import './styles/industrial.css';
+
+/* Swiss International / ITS design system — scoped to [data-theme-name="swiss"] */
+@import './styles/swiss.css';
+
+
+
+/* Scan the published design-system bundle so its utility classes survive
+   Tailwind's JIT purge. */
+@source '../node_modules/@nous-research/ui/dist';
+
+/* ------------------------------------------------------------------ */
+/* JetBrains Mono — bundled for the embedded TUI (/chat tab).          */
+/* Gives the terminal a proper monospace font even on systems where    */
+/* the user doesn't have one installed locally; xterm.js picks it up   */
+/* via ChatPage's `fontFamily` option.                                 */
+/* Apache-2.0.                                                         */
+/* ------------------------------------------------------------------ */
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts-terminal/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts-terminal/JetBrainsMono-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts-terminal/JetBrainsMono-Italic.woff2') format('woff2');
+}
+
+/* ================================================================== */
+/*  INDRA — Swiss International / ITS Design System (default)         */
+/*  Background: #FFFFFF  Foreground: #000000  Accent: #FF3000 (red)   */
+/*  Radius: 0px  Border: 2px #000000  Font: Inter 400/500/700/900     */
+/*  ThemeProvider overwrites these at runtime when the user switches   */
+/*  to any other theme — these are the first-load / fallback values.  */
+/* ================================================================== */
+
+:root {
+  /* ── Swiss International core tokens ────────────────────────────── */
+  --swiss-bg:          #FFFFFF;   /* white canvas */
+  --swiss-fg:          #000000;   /* black ink */
+  --swiss-muted:       #F2F2F2;   /* muted surface — light grey */
+  --swiss-accent:      #FF3000;   /* Swiss Red — FUNCTIONAL signal only */
+  --swiss-accent-dark: #CC2600;   /* darkened red for hover/pressed */
+  --swiss-border:      #000000;   /* thick black borders */
+  --swiss-radius:      0px;       /* strictly rectangular */
+  --swiss-border-width: 2px;      /* standard structural border */
+  --swiss-border-heavy: 3px;      /* header/card demarcation */
+
+  /* ── Nous DS palette wired to Swiss values ───────────────────────── */
+  /* ThemeProvider resets these via applyTheme() on every theme switch. */
+  /* The values here are the first-load defaults (Swiss white/black).   */
+  --foreground:        color-mix(in srgb, #000000 100%, transparent);
+  --foreground-base:   #000000;
+  --foreground-alpha:  1;
+
+  --midground:         color-mix(in srgb, #000000 100%, transparent);
+  --midground-base:    #000000;
+  --midground-alpha:   1;
+
+  --background:        color-mix(in srgb, #FFFFFF 100%, transparent);
+  --background-base:   #FFFFFF;
+  --background-alpha:  1;
+
+  /* ── Typography — Inter, Swiss International standard ───────────── */
+  --theme-font-sans:    "Inter", system-ui, -apple-system, "Segoe UI",
+                         Roboto, "Helvetica Neue", Arial, sans-serif;
+  --theme-font-mono:    "JetBrains Mono", ui-monospace, "SF Mono",
+                         "Cascadia Mono", Menlo, Consolas, monospace;
+  --theme-font-display: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --theme-base-size:    15px;
+  --theme-line-height:  1.5;
+  --theme-letter-spacing: 0;
+
+  /* ── Layout tokens ──────────────────────────────────────────────── */
+  --radius:             0px;      /* Swiss: no rounding whatsoever */
+  --theme-radius:       0px;
+  --theme-spacing-mul:  1;
+  --theme-density:      comfortable;
+
+  /* ── Data-series accents — Analytics + Models chart bars ─────────── */
+  /* Swiss Red for input (primary/attention), black for output.         */
+  --series-input-token:  #FF3000;
+  --series-output-token: #000000;
+
+  /* ── Neumorphic surface tokens ───────────────────────────────────── */
+  /* These remain here so [data-theme-name="industrial"] and the        */
+  /* neumorphic presets can reference them before ThemeProvider fires.  */
+  --neu-bg:            #E0E5EC;
+  --neu-shadow-dark:   rgb(163 177 198 / 0.6);
+  --neu-shadow-light:  rgba(255 255 255 / 0.5);
+  --neu-accent:        #00E0C6;
+  --neu-accent-light:  #33E8D0;
+  --neu-accent-dark:   #00C4AD;
+  --neu-text-primary:  #3D4852;
+  --neu-text-muted:    #6B7280;
+  --neu-text-tertiary: #8B95A5;
+  --neu-text-accent:   #00A896;
+  --neu-radius-card:   32px;
+  --neu-radius-base:   16px;
+  --neu-radius-inner:  12px;
+
+  /* ── Industrial Skeuomorphism shadow tokens ──────────────────────── */
+  /* Used by industrial.css; referenced before ThemeProvider fires.    */
+  --ind-shadow-card:
+    8px 8px 16px #babecc,
+    -8px -8px 16px #ffffff;
+  --ind-shadow-floating:
+    12px 12px 24px #babecc,
+    -12px -12px 24px #ffffff,
+    inset 1px 1px 0 rgba(255, 255, 255, 0.5);
+  --ind-shadow-pressed:
+    inset 6px 6px 12px #babecc,
+    inset -6px -6px 12px #ffffff;
+  --ind-shadow-recessed:
+    inset 4px 4px 8px #babecc,
+    inset -4px -4px 8px #ffffff;
+  --ind-shadow-raised-sm:
+    5px 5px 10px #babecc,
+    -5px -5px 10px #ffffff;
+  --ind-glow-orange:  0 0 10px 2px rgba(255, 71, 87, 0.6);
+  --ind-glow-green:   0 0 10px 2px rgba(34, 197, 94, 0.7);
+  --ind-glow-amber:   0 0 10px 2px rgba(217, 119, 6, 0.6);
+  --ind-accent:       #ff4757;
+  --ind-accent-dark:  #cc1f2e;
+  --ind-accent-light: #ff6b78;
+  --ind-shadow-dark:  #babecc;
+  --ind-shadow-light: #ffffff;
+}
+
+/* ── Font stack applied globally ────────────────────────────────────── */
+html {
+  font-family: var(--theme-font-sans);
+  font-size: var(--theme-base-size);
+  line-height: var(--theme-line-height);
+  letter-spacing: var(--theme-letter-spacing);
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  scroll-behavior: smooth;
+  /* Swiss: white canvas, black ink by default */
+  background: var(--background-base, #FFFFFF);
+  color: var(--foreground-base, #000000);
+}
+
+body {
+  font-family: var(--theme-font-sans);
+  min-height: 0;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--background-base, #FFFFFF);
+}
+
+code, kbd, pre, samp, .font-mono, .font-mono-ui {
+  font-family: var(--theme-font-mono);
+}
+
+/* Display font utility — Plus Jakarta Sans for hero headings */
+.font-display {
+  font-family: var(--theme-font-display);
+}
+
+/* Density: scale the shadcn spacing utilities via a multiplier. */
+@theme inline {
+  --spacing: calc(0.25rem * var(--theme-spacing-mul, 1));
+  --font-sans:    var(--theme-font-sans);
+  --font-mono:    var(--theme-font-mono);
+  --font-display: var(--theme-font-display);
+}
+
+#root {
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  html,
+  body,
+  #root {
+    min-height: 100dvh;
+    height: auto;
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+/* Dashboard layout bumps `small` and `code` to readable sizes. */
+small { font-size: 1.0625rem; }
+code  { font-size: 0.875rem; }
+
+/* ================================================================== */
+/*  Shadcn-compat tokens                                               */
+/*  The dashboard's page code uses shadcn-style utility classes        */
+/*  (bg-card, text-muted-foreground, border-border, etc.) extensively. */
+/*  We expose those tokens on top of the neumorphic palette so classes */
+/*  continue to resolve correctly.                                     */
+/* ================================================================== */
+@theme inline {
+  /* ── Swiss International shadcn-compat tokens ─────────────────────── */
+  /* These are the Tailwind v4 @theme inline mappings. They reference   */
+  /* the Swiss CSS vars set in :root above. The ThemeProvider will      */
+  /* override --color-* on :root directly (via element.style) on every  */
+  /* theme switch, so other themes keep working correctly.              */
+
+  /* Foreground */
+  --color-foreground:             var(--swiss-fg, #000000);
+
+  /* Card — white surface, black text, no shadow depth */
+  --color-card:                   var(--swiss-bg, #FFFFFF);
+  --color-card-foreground:        var(--swiss-fg, #000000);
+
+  /* Primary interactive — Swiss Red */
+  --color-primary:                var(--swiss-accent, #FF3000);
+  --color-primary-foreground:     #FFFFFF;
+
+  /* Secondary — muted grey panel */
+  --color-secondary:              var(--swiss-muted, #F2F2F2);
+  --color-secondary-foreground:   var(--swiss-fg, #000000);
+
+  /* Muted */
+  --color-muted:                  var(--swiss-muted, #F2F2F2);
+  --color-muted-foreground:       #555555;   /* 5.7:1 on white — WCAG AA */
+
+  /* Accent tint — very light Swiss Red wash for hover surfaces */
+  --color-accent:                 color-mix(in srgb, var(--swiss-accent, #FF3000) 8%, #FFFFFF);
+  --color-accent-foreground:      var(--swiss-fg, #000000);
+
+  /* Semantic states */
+  --color-destructive:            var(--swiss-accent, #FF3000);  /* Red IS destructive */
+  --color-destructive-foreground: #FFFFFF;
+  --color-success:                #1A7A1A;   /* Dark green — sufficient contrast on white */
+  --color-warning:                #996600;   /* Dark amber — sufficient contrast on white */
+
+  /* Swiss: thick visible borders define structure (not shadows) */
+  --color-border:                 var(--swiss-border, #000000);
+  --color-input:                  var(--swiss-bg, #FFFFFF);
+  --color-ring:                   var(--swiss-accent, #FF3000);  /* Red focus ring */
+
+  /* Popover */
+  --color-popover:                var(--swiss-bg, #FFFFFF);
+  --color-popover-foreground:     var(--swiss-fg, #000000);
+
+  /* Swiss radius — everything is 0 */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+}
+
+/* ================================================================== */
+/*  Neumorphic Page Surface Scope                                       */
+/*  Applied to the content wrapper via data-neu="true" in App.tsx.     */
+/*  Only activates when the Industrial / Neumorphic theme is active.   */
+/*  Excludes the embedded chat/PTY terminal which must stay dark.       */
+/* ================================================================== */
+
+[data-neu="true"] {
+  background: var(--neu-bg);
+  color: var(--neu-text-primary);
+}
+
+/* Input / textarea wells — inset shadow, no border */
+[data-neu="true"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+[data-neu="true"] textarea,
+[data-neu="true"] select {
+  background: var(--neu-bg);
+  border: none !important;
+  border-radius: var(--neu-radius-base);
+  box-shadow:
+    inset 6px 6px 10px rgb(163 177 198 / 0.6),
+    inset -6px -6px 10px rgba(255 255 255 / 0.5);
+  color: var(--neu-text-primary);
+  transition: box-shadow 300ms ease-out;
+}
+
+[data-neu="true"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+[data-neu="true"] textarea:focus {
+  box-shadow:
+    inset 10px 10px 20px rgb(163 177 198 / 0.7),
+    inset -10px -10px 20px rgba(255 255 255 / 0.6),
+    0 0 0 2px var(--neu-bg),
+    0 0 0 4px var(--neu-accent);
+  outline: none;
+}
+
+/* ── Terminal pane exclusion ─────────────────────────────────────────── */
+/* The xterm.js PTY container inside ChatPage must remain dark.         */
+/* data-chat-active is already set in App.tsx render; this restores     */
+/* the dark palette for the entire subtree without any JS changes.      */
+[data-chat-active="true"] {
+  --background-base:  #05091A;
+  --midground-base:   #E0E0E0;
+  --neu-bg:           #05091A;
+  --neu-text-primary: #ffffff;
+  background:         #05091A;
+  color:              #ffffff;
+}
+[data-chat-active="true"] input,
+[data-chat-active="true"] textarea {
+  background: #0B1B33;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  box-shadow: none;
+  color: #ffffff;
+}
+
+/* ================================================================== */
+/*  Animations                                                          */
+/* ================================================================== */
+
+/* Ambient float — applied to decorative elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* Physical press simulation */
+@keyframes neu-press {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(1px); }
+}
+
+/* Collapsed sidebar tooltip entrance */
+@keyframes sidebar-tooltip-in {
+  from { opacity: 0; transform: translateY(-50%) translateX(-4px); }
+  to   { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+/* Toast animations */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toast-out {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(16px); }
+}
+
+/* Generic fade + dialog entrance */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ================================================================== */
+/*  Scrollbar utility                                                   */
+/* ================================================================== */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ================================================================== */
+/*  Monospace utilities                                                  */
+/* ================================================================== */
+.font-mono-ui {
+  font-family: var(--theme-font-mono);
+}
+
+/* ================================================================== */
+/*  Grain texture — subtle noise overlay for badges / pills             */
+/* ================================================================== */
+.grain {
+  position: relative;
+}
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+  pointer-events: none;
+  background: repeating-conic-gradient(currentColor 0% 25%, #0000 0% 50%) 0 0 /
+    2px 2px;
+}
+
+/* ================================================================== */
+/*  Swiss International — Texture Utility Classes                       */
+/*  Use ONLY on large empty areas: sidebar BG, empty states, page BG.  */
+/*  NEVER apply to data tables, forms, or dense data regions.          */
+/*  Opacity deliberately kept at 2–4% so texture is felt, not seen.   */
+/* ================================================================== */
+
+/**
+ * .swiss-grid-pattern
+ * Fine orthogonal grid — structural Swiss grid reference.
+ * Recommended: sidebar background, empty state panels.
+ */
+.swiss-grid-pattern {
+  background-image:
+    linear-gradient(to right, #000000 1px, transparent 1px),
+    linear-gradient(to bottom, #000000 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-color: transparent;
+  /* opacity of the pattern only (not the element) — use ::before if
+     you need the element itself to have a background color too */
+  opacity: 1; /* SVG-level: the pattern lines render at 2% */
+}
+
+/* Stand-alone modifier: wrap inside a relative container and apply     */
+/* .swiss-grid-pattern as a ::before pseudo-element so the element's   */
+/* own background-color is preserved.                                   */
+.swiss-grid-bg {
+  position: relative;
+}
+.swiss-grid-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(to right, #000000 1px, transparent 1px),
+    linear-gradient(to bottom, #000000 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.025;   /* 2.5% — felt not seen */
+}
+
+/**
+ * .swiss-dots
+ * Dot-matrix grid — quieter than lines, reads as subtle screen tone.
+ * Recommended: page background, empty state backgrounds.
+ */
+.swiss-dots-bg {
+  position: relative;
+}
+.swiss-dots-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  /* SVG dot rendered via inline data URI — no external image */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23000000'/%3E%3C/svg%3E");
+  background-size: 20px 20px;
+  opacity: 0.03;    /* 3% */
+}
+
+/**
+ * .swiss-diagonal-bg
+ * 45° hatching — pairs with the Swiss diagonal / dynamic movement.
+ * Recommended: decorative panels, section dividers, call-out blocks.
+ */
+.swiss-diagonal-bg {
+  position: relative;
+}
+.swiss-diagonal-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #000000 0px,
+    #000000 1px,
+    transparent 1px,
+    transparent 10px
+  );
+  opacity: 0.02;    /* 2% — barely perceptible diagonal rhythm */
+}
+
+/**
+ * .swiss-noise-bg
+ * Film grain / noise — tactile surface texture for empty states.
+ * Recommended: empty state full-bleed areas, sidebar background.
+ */
+.swiss-noise-bg {
+  position: relative;
+}
+.swiss-noise-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  /* Noise via SVG feTurbulence rendered as data URI */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: 0.04;    /* 4% */
+  mix-blend-mode: multiply;
+}
+
+/* ================================================================== */
+/*  RTL Support                                                          */
+/* ================================================================== */
+html[dir="rtl"] {
+  direction: rtl;
+}

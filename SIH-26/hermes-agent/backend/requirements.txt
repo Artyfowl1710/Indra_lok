@@ -1,0 +1,39 @@
+# Core server
+fastapi==0.115.12
+uvicorn[standard]==0.34.3
+pydantic==2.13.4
+pydantic-settings==2.9.1
+sqlalchemy==2.0.41
+httpx==0.28.1
+pyyaml==6.0.2
+
+# Auth
+argon2-cffi==23.1.0
+
+# TLS cert generation
+cryptography==44.0.3
+
+# CLI
+typer[all]==0.12.3
+rich==13.7.1
+
+# RAG
+qdrant-client==1.9.1
+
+# ONNX Runtime (CPU; GPU variant installed separately if CUDA available)
+onnxruntime==1.30.0
+numpy==2.2.6
+
+# Optional: HuggingFace download (only used when allow_hf_download=True)
+# huggingface_hub==0.23.0   # uncomment for non-air-gapped environments
+
+# NOTE on vLLM: install separately with CUDA support.
+# pip install vllm  (requires CUDA 12.x, not included here to keep base image lean)
+# vLLM makes no outbound calls at runtime when --disable-log-requests is set.
+
+# NOTE on llama-swap: Go binary, not a Python package.
+# Download from https://github.com/mostlygeek/llama-swap/releases and place in bin/llama-swap
+
+# NOTE on ComfyUI: Python app, not a package.
+# Clone https://github.com/comfyanonymous/ComfyUI and place adjacent to this repo.
+# ComfyUI custom nodes that phone home must be audited before air-gapped deployment.

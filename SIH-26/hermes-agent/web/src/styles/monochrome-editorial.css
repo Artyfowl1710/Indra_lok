@@ -1,0 +1,332 @@
+/* INDRA Editorial Monochrome ------------------------------------------------
+   Presentation-only layer. Runtime, routes, and API behavior remain untouched.
+*/
+:root{
+  --mono-bg:#fff;--mono-fg:#000;--mono-muted:#525252;--mono-soft:#f5f5f5;
+  --mono-line:#000;--mono-hairline:#e5e5e5;--mono-inverse:#000;
+  --background-base:#fff;--midground-base:#000;--foreground-base:#000;
+  --color-background:#fff;--color-foreground:#000;--color-card:#fff;--color-card-foreground:#000;
+  --color-primary:#000;--color-primary-foreground:#fff;--color-secondary:#f5f5f5;--color-secondary-foreground:#000;
+  --color-muted:#f5f5f5;--color-muted-foreground:#525252;--color-accent:#000;--color-accent-foreground:#fff;
+  --color-border:#000;--color-input:#fff;--color-ring:#000;--color-popover:#fff;--color-popover-foreground:#000;
+  --radius-sm:0px;--radius-md:0px;--radius-lg:0px;--radius-xl:0px;
+}
+html,body,#root{background:#fff!important;color:#000!important}
+body{font-family:"Source Serif 4","Source Serif",Georgia,serif;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.015;background:repeating-linear-gradient(0deg,transparent,transparent 1px,#000 1px,#000 2px);background-size:100% 4px}
+::selection{background:#000!important;color:#fff!important}
+*{border-radius:0!important;box-shadow:none!important}
+*:focus-visible{outline:3px solid #000!important;outline-offset:3px!important}
+*{scrollbar-color:#000 #f5f5f5}
+*::-webkit-scrollbar{width:10px;height:10px}*::-webkit-scrollbar-track{background:#f5f5f5}*::-webkit-scrollbar-thumb{background:#000;border:2px solid #f5f5f5}
+
+/* Shell and navigation */
+.indra-app-shell,.indra-content,[data-neu="true"]{background:#fff!important;color:#000!important}
+.stitch-topbar{height:72px;min-height:72px;padding:0 clamp(1rem,4vw,4rem);gap:clamp(1rem,2.5vw,3rem);border-bottom:4px solid #000;background:#fff;color:#000}
+.stitch-wordmark,.stitch-primary-nav a,.stitch-runtime-cluster,.stitch-host-status{color:#000!important}
+.stitch-mark{background:#000;color:#fff;border:0}
+.stitch-primary-nav{gap:clamp(.8rem,1.8vw,2rem)}
+.stitch-primary-nav a{border-bottom:3px solid transparent;font-family:"JetBrains Mono",monospace;font-size:.72rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase}
+.stitch-primary-nav a:hover,.stitch-primary-nav a.active{border-color:#000;color:#000!important}
+.stitch-primary-nav a:first-child{font-weight:800}
+.stitch-search,.stitch-avatar,.stitch-host-status{border:1px solid #000;background:#fff;color:#000!important}
+.stitch-search:hover,.stitch-avatar:hover{background:#000;color:#fff!important}
+.stitch-host-status{font-family:"JetBrains Mono",monospace}.stitch-host-status>span{background:#000!important;box-shadow:none!important}.stitch-host-status .offline{background:#525252!important}
+#app-sidebar.indra-sidebar{background:#fff!important;color:#000!important;border-right:1px solid #000!important}
+#app-sidebar.indra-sidebar a,#app-sidebar.indra-sidebar button{color:#000!important;background:#fff!important;border-color:transparent!important}
+#app-sidebar.indra-sidebar a:hover,#app-sidebar.indra-sidebar button:hover{background:#f5f5f5!important;color:#000!important}
+#app-sidebar.indra-sidebar a[aria-current="page"]{background:#000!important;color:#fff!important;border-color:#000!important}
+#app-sidebar.indra-sidebar :is(.text-midground,.text-foreground,.text-text-secondary,.text-text-tertiary){color:inherit!important}
+.indra-sidebar::before{color:#000!important}
+
+/* Shared surfaces, controls, tables, and form fields */
+.stitch-page,.stitch-page [class*="bg-card"],.stitch-page [class*="bg-background"],[role="dialog"]{background:#fff!important;color:#000!important}
+.stitch-page [class*="border"],[data-neu="true"] :is(.border,.border-border),.stitch-page table{border-color:#000!important}
+.stitch-page :is(h1,h2,h3,h4,h5,h6),[data-neu="true"] :is(h1,h2,h3,h4,h5,h6){font-family:"Playfair Display",Georgia,serif;color:#000!important}
+.stitch-page :is(.text-muted-foreground,.text-text-secondary,.text-text-tertiary),[data-neu="true"] :is(.text-muted-foreground,.text-text-secondary,.text-text-tertiary){color:#525252!important}
+.stitch-page :is(button,[role="button"],[role="tab"]),[data-neu="true"] button,[role="dialog"] button{border:1px solid #000!important;background:#fff!important;color:#000!important;font-family:"JetBrains Mono",monospace;transition:background-color .08s,color .08s,border-color .08s!important}
+.stitch-page :is(button,[role="button"],[role="tab"]):hover,[data-neu="true"] button:hover,[role="dialog"] button:hover{background:#000!important;color:#fff!important}
+.stitch-page :is(input,textarea,select),[data-neu="true"] :is(input,textarea,select),[role="dialog"] :is(input,textarea,select){min-height:44px;border:2px solid #000!important;background:#fff!important;color:#000!important;outline:0!important}
+.stitch-page :is(input,textarea,select)::placeholder,[role="dialog"] :is(input,textarea,select)::placeholder{color:#525252!important;font-style:italic}
+.stitch-page :is(input,textarea,select):focus,[data-neu="true"] :is(input,textarea,select):focus,[role="dialog"] :is(input,textarea,select):focus{border-width:4px!important;border-color:#000!important;box-shadow:none!important}
+.stitch-page table{border-collapse:collapse;background:#fff!important}.stitch-page thead{background:#000!important;color:#fff!important}.stitch-page tbody tr{border-color:#e5e5e5!important}.stitch-page tbody tr:hover{background:#f5f5f5!important}
+
+/* Menus and portalled primitives */
+#root [role="listbox"],#root [role="menu"],body>[role="dialog"].fixed>div{border:2px solid #000!important;background:#fff!important;color:#000!important;box-shadow:none!important}
+#root [role="option"],#root [role="menuitem"]{min-height:42px;background:#fff!important;color:#000!important;border-left:0!important;border-bottom:1px solid #e5e5e5!important}
+#root [role="option"]:hover,#root [role="menuitem"]:hover,#root [role="option"][data-highlighted="true"],#root [role="option"][aria-selected="true"]{background:#000!important;color:#fff!important;border-color:#000!important}
+#root [role="combobox"]{border:2px solid #000!important;background:#fff!important;color:#000!important}
+body>[role="dialog"].fixed{background:rgba(0,0,0,.72)!important;backdrop-filter:none!important}
+body>[role="dialog"].fixed>div{border:2px solid #000!important;background:#fff!important;color:#000!important}
+body>[role="dialog"] :is(header,footer){border-color:#000!important;background:#fff!important}
+body>[role="dialog"] :is(.text-foreground,.text-midground,.text-muted-foreground,.text-text-secondary,.text-text-tertiary){color:#000!important}
+
+/* Dashboard: convert the hero and all sections to editorial paper/ink. */
+.sovereign-dashboard{--acid:#000;--ink:#fff;--panel:#fff;--line:#000;--muted:#525252;background:#fff!important;color:#000!important}
+.sovereign-dashboard .sovereign-grid{background-image:linear-gradient(#00000010 1px,transparent 1px),linear-gradient(90deg,#00000010 1px,transparent 1px);opacity:.75}
+.sovereign-dashboard .sovereign-hero:after{background:radial-gradient(circle,#00000012,transparent 64%);filter:none}
+.sovereign-dashboard .sovereign-pill{border-color:#000;background:#fff;color:#000}.sovereign-dashboard .sovereign-pill span{background:#000;box-shadow:none}
+.sovereign-dashboard .sovereign-hero h2,.sovereign-dashboard .sovereign-heading h3,.sovereign-dashboard .deployment-banner h3{font-family:"Playfair Display",Georgia,serif;color:#000}
+.sovereign-dashboard .sovereign-hero h2 em,.sovereign-dashboard .sovereign-heading span,.sovereign-dashboard .deployment-banner>div>span{color:#000;text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:8px}
+.sovereign-dashboard .sovereign-hero-copy>p,.sovereign-dashboard .sovereign-heading p,.sovereign-dashboard .deployment-banner p{color:#525252}
+.sovereign-dashboard .sovereign-primary{background:#000;color:#fff!important;border:2px solid #000}.sovereign-dashboard .sovereign-secondary{background:#fff;color:#000!important;border:2px solid #000}.sovereign-dashboard .sovereign-primary:hover,.sovereign-dashboard .sovereign-secondary:hover{background:#fff;color:#000!important;border-color:#000;transform:none}
+.sovereign-dashboard .sovereign-telemetry,.sovereign-dashboard .sovereign-section,.sovereign-dashboard .deployment-banner{background:#fff;border-color:#000}
+.sovereign-dashboard .sovereign-telemetry article,.sovereign-dashboard .pipeline-steps article,.sovereign-dashboard .pillar-grid article{background:#fff;border-color:#000;color:#000}.sovereign-dashboard .sovereign-telemetry small,.sovereign-dashboard .sovereign-telemetry span,.sovereign-dashboard .pipeline-steps small{color:#525252}.sovereign-dashboard .sovereign-telemetry strong{color:#000}
+.sovereign-dashboard .enclave-visual{filter:grayscale(1)}.sovereign-dashboard .enclave-orbit{border-color:#000}.sovereign-dashboard .enclave-orbit:before,.sovereign-dashboard .enclave-orbit:after{background:#000;box-shadow:none}.sovereign-dashboard .enclave-shards{border-color:#000}.sovereign-dashboard .enclave-core{background:#000;box-shadow:none}.sovereign-dashboard .enclave-core:before{background:#fff}.sovereign-dashboard .enclave-core span{color:#000;text-shadow:none}.sovereign-dashboard .enclave-caption{border-color:#000;background:#fff;color:#000}.sovereign-dashboard .enclave-caption span{color:#000}.sovereign-dashboard .enclave-caption small{color:#525252}
+.sovereign-dashboard .scenario-tabs button{background:#fff!important;color:#525252!important;border-color:transparent!important}.sovereign-dashboard .scenario-tabs button[aria-selected="true"]{background:#000!important;color:#fff!important;border-color:#000!important}.sovereign-dashboard .runtime-console{background:#000;color:#fff;border-color:#000}.sovereign-dashboard .runtime-console header,.sovereign-dashboard .runtime-console footer{border-color:#fff}.sovereign-dashboard .runtime-console p,.sovereign-dashboard .runtime-console header strong{color:#fff}.sovereign-dashboard .runtime-console .warn,.sovereign-dashboard .runtime-console .pass{color:#fff}
+.sovereign-dashboard .pillar-grid,.sovereign-dashboard .comparison-table,.sovereign-dashboard .pipeline-layout{background:#000;border-color:#000}.sovereign-dashboard .pillar-grid article,.sovereign-dashboard .comparison-table header,.sovereign-dashboard .comparison-table>div{border-color:#000}.sovereign-dashboard .pillar-grid article>svg,.sovereign-dashboard .pillar-grid a,.sovereign-dashboard .matrix-good svg{color:#000}.sovereign-dashboard .comparison-table header{background:#000;color:#fff}.sovereign-dashboard .comparison-table header strong,.sovereign-dashboard .comparison-table .matrix-good{color:#fff}.sovereign-dashboard .comparison-table>div{background:#fff;color:#000}.sovereign-dashboard .matrix-muted{color:#525252}.sovereign-dashboard .mission{background:#fff;border:2px solid #000}.sovereign-dashboard .mission:before{display:none}.sovereign-dashboard .mission-symbol{border-color:#000;background:#000;color:#fff;transform:none}.sovereign-dashboard .mission-symbol svg{transform:none}.sovereign-dashboard .mission span,.sovereign-dashboard .mission a{color:#000}.sovereign-dashboard .deployment-banner aside{border:2px solid #000;background:#fff;box-shadow:none}.sovereign-dashboard .deployment-banner aside header,.sovereign-dashboard .deployment-banner dl div{border-color:#000}.sovereign-dashboard .deployment-banner aside header,.sovereign-dashboard .deployment-banner dd{color:#000}.sovereign-dashboard .deployment-banner aside>p{background:#000;color:#fff}.sovereign-dashboard .sovereign-footer{background:#000;color:#fff;border-color:#000}.sovereign-dashboard .sovereign-footer span:last-child{color:#fff}
+
+@media(max-width:1100px){.stitch-topbar{gap:1rem}.stitch-primary-nav{gap:.8rem}.sovereign-hero{grid-template-columns:1fr}.sovereign-hero .enclave-visual{width:min(70vw,500px);margin:2rem auto 0}}
+@media(max-width:768px){.stitch-topbar{height:60px;min-height:60px;padding:0 1rem;border-bottom-width:3px}.stitch-runtime-cluster{display:none}.sovereign-dashboard .sovereign-hero{padding:3rem 1.25rem}.sovereign-dashboard .sovereign-hero h2{font-size:clamp(3rem,14vw,5rem)}.sovereign-dashboard .sovereign-telemetry{grid-template-columns:repeat(2,1fr)}.sovereign-dashboard .sovereign-telemetry article:nth-child(2){border-right:0}.sovereign-dashboard .sovereign-telemetry article:nth-child(-n+2){border-bottom:1px solid #000}}
+
+/* Swiss International signal layer — content and behavior remain unchanged. */
+:root{--swiss-red:#ff3000;--swiss-red-soft:#fff0ec;--color-primary:#ff3000;--color-primary-foreground:#fff;--color-ring:#ff3000;--color-accent:#ff3000;--color-accent-foreground:#fff}
+body{font-family:Inter,Helvetica,Arial,sans-serif}
+::selection{background:var(--swiss-red)!important;color:#fff!important}
+*:focus-visible{outline-color:var(--swiss-red)!important}
+
+/* Navigation */
+.stitch-mark{background:var(--swiss-red);color:#fff}
+.stitch-primary-nav a:hover,.stitch-primary-nav a.active{border-color:var(--swiss-red);color:#000!important}
+.stitch-search:hover,.stitch-avatar:hover{background:var(--swiss-red);border-color:var(--swiss-red);color:#fff!important}
+.stitch-host-status>span{background:var(--swiss-red)!important}
+#app-sidebar.indra-sidebar a[aria-current="page"]{background:#000!important;color:#fff!important;border-left:6px solid var(--swiss-red)!important}
+#app-sidebar.indra-sidebar a:hover,#app-sidebar.indra-sidebar button:hover{background:var(--swiss-red-soft)!important;color:#000!important}
+.indra-sidebar::before{color:var(--swiss-red)!important}
+
+/* Page chrome and controls */
+.stitch-page :is(h1,h2,h3,h4,h5,h6),[data-neu="true"] :is(h1,h2,h3,h4,h5,h6){font-family:Inter,Helvetica,Arial,sans-serif;font-weight:900;letter-spacing:-.045em}
+.stitch-masthead{border-bottom:4px solid #000}.stitch-masthead h2{font-weight:900;text-transform:uppercase}
+.stitch-eyebrow{color:var(--swiss-red)!important}.stitch-masthead__meta span::before{background:var(--swiss-red)!important}
+.stitch-page :is(button,[role="button"],[role="tab"]):hover,[data-neu="true"] button:hover,[role="dialog"] button:hover{background:var(--swiss-red)!important;border-color:var(--swiss-red)!important;color:#fff!important}
+.stitch-page :is(input,textarea,select):focus,[data-neu="true"] :is(input,textarea,select):focus,[role="dialog"] :is(input,textarea,select):focus{border-color:var(--swiss-red)!important}
+#root [role="option"]:hover,#root [role="menuitem"]:hover,#root [role="option"][data-highlighted="true"],#root [role="option"][aria-selected="true"]{background:var(--swiss-red)!important;color:#fff!important;border-color:var(--swiss-red)!important}
+#root [role="combobox"]:focus-visible{border-color:var(--swiss-red)!important;outline-color:var(--swiss-red)!important}
+
+/* Dashboard */
+.sovereign-dashboard{--acid:var(--swiss-red)}
+.sovereign-dashboard .sovereign-grid{background-image:linear-gradient(#0000000c 1px,transparent 1px),linear-gradient(90deg,#0000000c 1px,transparent 1px);background-size:24px 24px;opacity:1;mask-image:none}
+.sovereign-dashboard .sovereign-hero{border-bottom:4px solid #000;background:#fff}
+.sovereign-dashboard .sovereign-hero:after{background:radial-gradient(circle,var(--swiss-red-soft),transparent 65%)}
+.sovereign-dashboard .sovereign-pill{border:2px solid #000}.sovereign-dashboard .sovereign-pill span{background:var(--swiss-red)}
+.sovereign-dashboard .sovereign-hero h2,.sovereign-dashboard .sovereign-heading h3,.sovereign-dashboard .deployment-banner h3{font-family:Inter,Helvetica,Arial,sans-serif;font-weight:900;letter-spacing:-.065em;text-transform:uppercase}
+.sovereign-dashboard .sovereign-hero h2 em,.sovereign-dashboard .sovereign-heading span,.sovereign-dashboard .deployment-banner>div>span{color:var(--swiss-red);text-decoration:none}
+.sovereign-dashboard .sovereign-primary{background:var(--swiss-red);border-color:var(--swiss-red);color:#fff!important}.sovereign-dashboard .sovereign-primary:hover{background:#000;border-color:#000;color:#fff!important}.sovereign-dashboard .sovereign-secondary:hover{background:var(--swiss-red);border-color:var(--swiss-red);color:#fff!important}
+.sovereign-dashboard .sovereign-telemetry{border-width:2px}.sovereign-dashboard .sovereign-telemetry .live:before{background:var(--swiss-red)}
+.sovereign-dashboard .enclave-visual{filter:none}.sovereign-dashboard .enclave-orbit:before,.sovereign-dashboard .enclave-orbit:after{background:var(--swiss-red)}.sovereign-dashboard .enclave-core{background:var(--swiss-red)}.sovereign-dashboard .enclave-core span{color:var(--swiss-red)}.sovereign-dashboard .enclave-caption{border-left:6px solid var(--swiss-red)}.sovereign-dashboard .enclave-caption span{color:var(--swiss-red)}
+.sovereign-dashboard .scenario-tabs button[aria-selected="true"]{background:var(--swiss-red)!important;color:#fff!important;border-color:var(--swiss-red)!important;box-shadow:none!important}
+.sovereign-dashboard .pipeline-steps article>div{border:2px solid #000;color:var(--swiss-red)}.sovereign-dashboard .runtime-console footer{border-top:4px solid var(--swiss-red)}
+.sovereign-dashboard .pillar-grid article>svg,.sovereign-dashboard .pillar-grid a,.sovereign-dashboard .matrix-good svg,.sovereign-dashboard .mission span,.sovereign-dashboard .mission a{color:var(--swiss-red)}
+.sovereign-dashboard .pillar-grid article:hover,.sovereign-dashboard .mission:hover{background:#000;color:#fff}.sovereign-dashboard .pillar-grid article:hover :is(h4,p,a,svg),.sovereign-dashboard .mission:hover :is(h4,p,a,span){color:#fff!important}
+.sovereign-dashboard .mission-symbol{background:var(--swiss-red);border-color:var(--swiss-red)}.sovereign-dashboard .deployment-banner aside>p{background:var(--swiss-red)}.sovereign-dashboard .sovereign-footer{border-top:8px solid var(--swiss-red)}
+
+/* Containment */
+.indra-app-shell :is(.grid,.flex)>*{min-width:0}
+.stitch-page :is(p,span,strong,code,pre,td,th,button,a,[role="option"],[role="menuitem"]){overflow-wrap:anywhere}
+.stitch-page :is(img,svg,video,canvas){max-width:100%}
+#root [role="listbox"],#root [role="menu"],body>[role="dialog"].fixed>div{max-width:min(calc(100vw - 2rem),64rem);max-height:calc(100dvh - 2rem);overflow:auto}
+@media(max-width:768px){.sovereign-dashboard .sovereign-hero h2{font-size:clamp(2.75rem,13vw,4.6rem);line-height:.88}.stitch-masthead h2{font-size:clamp(2.1rem,12vw,3.6rem)}#root [role="listbox"],#root [role="menu"]{max-width:calc(100vw - 1rem)}}
+
+/* Beat legacy portalled-field selectors without changing component logic. */
+html body>[role="dialog"].fixed :is(input,textarea,select),
+html body div[role="dialog"].fixed input.flex.w-full,
+html body div[role="dialog"].fixed textarea.flex.w-full,
+html body #indra-model-picker-filter{
+  border:2px solid #000!important;background:#fff!important;color:#000!important;
+  caret-color:#000!important;filter:none!important;box-shadow:none!important;
+}
+html body>[role="dialog"].fixed :is(input,textarea)::placeholder,
+html body div[role="dialog"].fixed input.flex.w-full::placeholder,
+html body div[role="dialog"].fixed textarea.flex.w-full::placeholder,
+html body #indra-model-picker-filter::placeholder{color:#525252!important;font-style:italic}
+html body>[role="dialog"].fixed :is(input,textarea,select):focus,
+html body>[role="dialog"].fixed :is(input,textarea,select):focus-visible,
+html body #indra-model-picker-filter:focus,
+html body #indra-model-picker-filter:focus-visible{border-color:var(--swiss-red)!important;outline:2px solid var(--swiss-red)!important;outline-offset:2px!important}
+html body>[role="dialog"] button:disabled{background:#f2f2f2!important;color:#737373!important;border-color:#a3a3a3!important;opacity:1}
+
+/* Cross-page cleanup: remove final Kinetic Obsidian / citron remnants. */
+.indra-page-header{background:#fff!important;color:#000!important;border-bottom:4px solid #000!important}
+.indra-page-header :is(h1,span,svg){color:#000!important}
+.indra-page-header button{background:#fff!important;color:#000!important;border:1px solid #000!important}
+.indra-page-header button:hover{background:var(--swiss-red)!important;color:#fff!important;border-color:var(--swiss-red)!important}
+.indra-app-shell main,
+html body [data-neu="true"].indra-content,
+.indra-content,
+.stitch-page{background:#fff!important;color:#000!important}
+
+/* Home sections are lazy-loaded after the global theme, so lock the intended palette. */
+.sovereign-dashboard .sovereign-section,
+.sovereign-dashboard .sovereign-section:nth-of-type(odd),
+.sovereign-dashboard .comparison-section,
+.sovereign-dashboard .deployment-banner{background:#fff!important;color:#000!important;border-color:#000!important}
+.sovereign-dashboard .sovereign-heading h3,.sovereign-dashboard .sovereign-heading p,.sovereign-dashboard .deployment-banner h3,.sovereign-dashboard .deployment-banner p{color:#000!important}
+.sovereign-dashboard .sovereign-heading p,.sovereign-dashboard .deployment-banner p{color:#525252!important}
+html body .sovereign-dashboard .scenario-tabs button[role="tab"]{background:#fff!important;color:#737373!important;border-color:transparent!important}
+html body .sovereign-dashboard .scenario-tabs button[role="tab"]:hover{background:var(--swiss-red-soft)!important;color:#000!important}
+html body .sovereign-dashboard .scenario-tabs button[role="tab"][aria-selected="true"]{background:var(--swiss-red)!important;color:#fff!important;border-color:var(--swiss-red)!important;box-shadow:none!important}
+.sovereign-dashboard .runtime-console footer,.sovereign-dashboard .runtime-console footer span{color:#fff!important;border-color:var(--swiss-red)!important}
+.sovereign-dashboard .pipeline-steps article>div{background:#000!important;color:var(--swiss-red)!important}
+.sovereign-dashboard .pillar-grid article,.sovereign-dashboard .mission{background:#fff!important;color:#000!important}
+.sovereign-dashboard .pillar-grid article :is(h4,p),.sovereign-dashboard .mission :is(h4,p){color:#000!important}
+.sovereign-dashboard .pillar-grid article p,.sovereign-dashboard .mission p{color:#737373!important}
+.sovereign-dashboard .pillar-grid article:hover,.sovereign-dashboard .mission:hover{background:#000!important;color:#fff!important}
+.sovereign-dashboard .pillar-grid article:hover :is(h4,p,a,svg),.sovereign-dashboard .mission:hover :is(h4,p,a,span){color:#fff!important}
+
+/* Projects: neutral, high-contrast transcript messages. */
+.stitch-projects-page [data-message-role]{border:1px solid #000!important;background:#fff!important;color:#000!important}
+.stitch-projects-page [data-message-role] *{color:#000!important}
+.stitch-projects-page [data-message-role="user"]{border-left:8px solid var(--swiss-red)!important;background:var(--swiss-red-soft)!important}
+.stitch-projects-page [data-message-role="assistant"]{border-left:8px solid #000!important;background:#f2f2f2!important}
+.stitch-projects-page [data-message-role="tool"]{border-left:8px solid var(--swiss-red)!important;background:#fff!important}
+.stitch-projects-page [data-message-role] :is(code,pre){background:#f2f2f2!important;color:#000!important;border-color:#000!important;white-space:pre-wrap;overflow-wrap:anywhere}
+
+/* Knowledge: keep the functional drop area light and readable. */
+.stitch-knowledge-page>button[aria-label="Upload files"]{background:#f2f2f2!important;color:#000!important;border:2px solid #000!important}
+.stitch-knowledge-page>button[aria-label="Upload files"] *{color:#000!important}
+.stitch-knowledge-page>button[aria-label="Upload files"]:hover{background:var(--swiss-red-soft)!important;border-color:var(--swiss-red)!important}
+
+/* Overview: make the editorial grid a complete full-width canvas. */
+.indra-content:has(.sovereign-dashboard){padding:0!important}
+.indra-content:has(.sovereign-dashboard)>div{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+.indra-content:has(.sovereign-dashboard) .sovereign-dashboard{width:100%!important;max-width:none!important;margin:0!important}
+.sovereign-dashboard .sovereign-grid{inset:0!important;width:100%!important;height:100%!important;background-size:24px 24px!important;mask-image:none!important}
+
+/* Configuration: remove the remaining Obsidian/citron component palette. */
+html body .stitch-config-page aside>div>div{background:#fff!important;border-color:#000!important;color:#000!important}
+html body .stitch-config-page aside [role="button"]{background:#fff!important;color:#000!important;border-color:#000!important}
+html body .stitch-config-page aside [role="button"]:hover{background:var(--swiss-red-soft)!important;color:#000!important}
+html body .stitch-config-page aside [role="button"][data-active="true"],
+html body .stitch-config-page aside [aria-current="true"]{background:var(--swiss-red)!important;color:#fff!important}
+html body .stitch-config-page aside [role="button"][data-active="true"] *,
+html body .stitch-config-page aside [aria-current="true"] *{color:#fff!important}
+html body .stitch-config-toolbar{background:#fff!important;border:2px solid #000!important;color:#000!important}
+html body #root .stitch-config-toolbar code{background:#111410!important;border-color:#000!important;color:#fff!important}
+html body .stitch-config-page label{color:#000!important}
+html body .stitch-config-page :is(.text-text-secondary,.text-text-tertiary,.text-muted-foreground){color:#525252!important}
+#root .indra-app-shell .stitch-config-page :is(input,textarea,select,[role="combobox"]){background:#fff!important;color:#000!important;border:2px solid #000!important;caret-color:#000!important}
+#root .indra-app-shell .stitch-config-page :is(input,textarea)::placeholder{color:#737373!important}
+#root .indra-app-shell .stitch-config-page :is(input,textarea,select,[role="combobox"]):focus{border-color:var(--swiss-red)!important;outline:2px solid var(--swiss-red)!important}
+#root .indra-app-shell .stitch-config-page input.flex.h-9,
+#root .indra-app-shell .stitch-config-page textarea.flex,
+#root .indra-app-shell .stitch-config-page select.flex{background:#fff!important;color:#000!important;border:2px solid #000!important;caret-color:#000!important}
+#root .indra-app-shell .stitch-config-page input.flex.h-9::placeholder,
+#root .indra-app-shell .stitch-config-page textarea.flex::placeholder{color:#737373!important}
+
+/* System and shared cards: force paper/ink contrast over legacy text tokens. */
+#root .indra-app-shell .indra-content :is(.text-midground,.text-foreground){color:#000!important}
+#root .indra-app-shell .indra-content [class*="bg-background-base"]{background:#fff!important;color:#000!important}
+#root .indra-app-shell .indra-content [class*="border-midground"]{border-color:#000!important}
+#root .indra-app-shell .indra-content .text-muted-foreground{color:#525252!important}
+
+/* Capabilities: remove citron and keep rows/actions readable in every state. */
+html body .stitch-capabilities-page aside [class*="bg-foreground"]{background:var(--swiss-red)!important;color:#fff!important}
+html body .stitch-capabilities-page aside [class*="bg-foreground"] :is(svg,span){color:#fff!important}
+html body .stitch-capabilities-page .group:hover{background:var(--swiss-red-soft)!important;color:#000!important}
+html body .stitch-capabilities-page .group:hover :is(span,p,svg){color:#000!important}
+html body .stitch-capabilities-page .group .text-muted-foreground{color:#525252!important}
+
+/* Buttons and custom model menus must carry their foreground into children. */
+html body .stitch-page button:hover :is(span,svg),
+html body .stitch-page [role="button"]:hover :is(span,svg){color:inherit!important;stroke:currentColor!important}
+html body .stitch-models-page [data-use-as-menu]>div>button:hover{background:var(--swiss-red)!important;color:#fff!important;border-color:var(--swiss-red)!important}
+html body .stitch-models-page [data-use-as-menu]>div>button:hover *{color:#fff!important}
+
+/* Switches are controls, not solid action buttons; preserve the thumb on hover/focus. */
+#root .indra-app-shell button[role="switch"],
+#root .indra-app-shell button[role="switch"]:hover{background:#fff!important;border:2px solid #000!important;color:#000!important}
+#root .indra-app-shell button[role="switch"]>span{background:#000!important}
+#root .indra-app-shell button[role="switch"][aria-checked="true"],
+#root .indra-app-shell button[role="switch"][aria-checked="true"]:hover{background:var(--swiss-red)!important;border-color:var(--swiss-red)!important}
+#root .indra-app-shell button[role="switch"][aria-checked="true"]>span{background:#fff!important}
+
+/* Segmented sub-navigation: one outline, shared dividers, red selected state. */
+#root .indra-app-shell [role="radiogroup"]{border:0!important;background:transparent!important;box-shadow:none!important;gap:0!important}
+#root .indra-app-shell [role="radiogroup"]>[role="radio"]{margin:0 0 0 -1px!important;border:1px solid #000!important;background:#fff!important;color:#000!important;box-shadow:none!important}
+#root .indra-app-shell [role="radiogroup"]>[role="radio"]:first-child{margin-left:0!important}
+#root .indra-app-shell [role="radiogroup"]>[role="radio"][class~="bg-midground"]{background:var(--swiss-red)!important;color:#fff!important;border-color:var(--swiss-red)!important;position:relative;z-index:1}
+#root .indra-app-shell [role="radiogroup"]>[role="radio"]:hover{background:var(--swiss-red-soft)!important;color:#000!important;border-color:var(--swiss-red)!important;position:relative;z-index:2}
+#root .indra-app-shell [role="radiogroup"]>[role="radio"][class~="bg-midground"]:hover{background:var(--swiss-red)!important;color:#fff!important}
+
+/* Activity console: high-contrast terminal colors over its black audit surface. */
+#root .indra-app-shell .stitch-activity-page .font-mono-ui{background:#090b0a!important;color:#f5f5f5!important}
+#root .indra-app-shell .stitch-activity-page .font-mono-ui .text-foreground{color:#f5f5f5!important}
+#root .indra-app-shell .stitch-activity-page .font-mono-ui .text-text-tertiary{color:#a3a3a3!important}
+#root .indra-app-shell .stitch-activity-page .font-mono-ui .text-warning{color:#ffb020!important}
+#root .indra-app-shell .stitch-activity-page .font-mono-ui .text-destructive{color:#ff5a3d!important}
+#root .indra-app-shell .stitch-activity-page .font-mono-ui>div:hover{background:#202020!important;color:#fff!important;border-left-color:var(--swiss-red)!important}
+
+/* File drop zone and compact actions never fall back to an empty black hover. */
+#root .indra-app-shell .stitch-knowledge-page button[aria-label="Upload files"]:hover{background:var(--swiss-red-soft)!important;color:#000!important;border-color:var(--swiss-red)!important}
+#root .indra-app-shell .stitch-knowledge-page button[aria-label="Upload files"]:hover *{color:#000!important;stroke:currentColor!important}
+
+/* Final legibility pass: microcopy, secondary page chrome, and dark chat rail. */
+.stitch-avatar{display:inline-flex!important;align-items:center!important;justify-content:center!important}
+.stitch-avatar svg{width:17px!important;height:17px!important;stroke-width:2!important}
+
+.indra-page-header{height:56px!important;min-height:56px!important}
+.indra-page-header>div{padding-inline:2rem!important}
+.indra-page-header h1{font-size:1rem!important;line-height:1!important;font-weight:800!important;letter-spacing:.04em!important}
+.indra-page-header h1+div>span{min-width:28px!important;justify-content:center!important;background:#fff!important;border:1px solid #000!important;color:#000!important;font-size:.75rem!important;font-weight:800!important;letter-spacing:.08em!important;padding:.35rem .5rem!important}
+
+.stitch-masthead__meta{gap:1.5rem!important}
+.stitch-masthead__meta span{color:#3f443f!important;font-size:.72rem!important;line-height:1.4!important;font-weight:800!important;letter-spacing:.16em!important}
+
+#root .indra-app-shell .stitch-models-page :is(.text-text-secondary,.text-text-tertiary){color:#3f3f3f!important}
+#root .indra-app-shell .stitch-models-page .text-xs{font-size:.75rem!important;line-height:1.25!important}
+#root .indra-app-shell .stitch-models-page [class*="tracking-[0.2em]"]{color:#000!important;font-weight:700!important;border-color:#737373!important;background:#fff!important}
+
+#chat-side-panel{color:#fff!important}
+#chat-side-panel :is(.text-text-secondary,.text-text-tertiary,.text-midground){color:#d6d6d6!important}
+#chat-side-panel aside>div:first-child span{color:#d6d6d6!important;font-size:.75rem!important;font-weight:800!important}
+#chat-side-panel button{border:1px solid #fff!important;background:transparent!important;color:#fff!important;box-shadow:none!important}
+#chat-side-panel button *{color:inherit!important;stroke:currentColor!important}
+#chat-side-panel button:hover{background:var(--swiss-red)!important;border-color:var(--swiss-red)!important;color:#fff!important}
+#chat-side-panel [class*="text-text-secondary"]:hover{color:#fff!important}
+#chat-side-panel .text-success{color:#ff6a47!important}
+
+/* Command Center uses two surfaces: dark rail chrome and a white model card. */
+#root .indra-app-shell #chat-side-panel .command-center-model-card{background:#fff!important;border:1px solid #000!important;color:#000!important}
+#root .indra-app-shell #chat-side-panel .command-center-model-card :is(div,span,svg){color:#000!important}
+#root .indra-app-shell #chat-side-panel .command-center-model-card>div>div:first-child{color:#525252!important;font-weight:800!important}
+#root .indra-app-shell #chat-side-panel .command-center-model-button{width:auto!important;border:0!important;background:transparent!important;color:#000!important;padding:0!important}
+#root .indra-app-shell #chat-side-panel .command-center-model-button:hover{background:transparent!important;border-color:transparent!important;color:var(--swiss-red)!important;text-decoration:underline!important}
+#root .indra-app-shell #chat-side-panel .command-center-model-button:hover *{color:var(--swiss-red)!important;stroke:currentColor!important}
+#root .indra-app-shell #chat-side-panel .command-center-model-card .text-success{background:var(--swiss-red)!important;border-color:var(--swiss-red)!important;color:#fff!important;font-weight:800!important}
+#root .indra-app-shell #chat-side-panel .command-center-model-card .text-success *{color:#fff!important}
+#root .indra-app-shell #chat-side-panel .command-center-new-chat{background:var(--swiss-red)!important;border:1px solid var(--swiss-red)!important;color:#fff!important;font-weight:800!important}
+#root .indra-app-shell #chat-side-panel .command-center-new-chat *{color:#fff!important;stroke:currentColor!important}
+#root .indra-app-shell #chat-side-panel .command-center-new-chat:hover{background:#fff!important;border-color:#fff!important;color:#000!important}
+#root .indra-app-shell #chat-side-panel .command-center-new-chat:hover *{color:#000!important;stroke:currentColor!important}
+
+@media(max-width:640px){
+  .indra-page-header{height:auto!important;min-height:52px!important}
+  .indra-page-header>div{padding-inline:1rem!important}
+  .stitch-masthead__meta{gap:.75rem!important}
+  .stitch-masthead__meta span{font-size:.66rem!important;letter-spacing:.1em!important}
+}
+
+/* Models / Use-as menu: one frame with single-pixel internal separators. */
+#root .indra-app-shell .stitch-models-page [data-use-as-menu]>div{border:1px solid #000!important;background:#fff!important;overflow:hidden!important}
+#root .indra-app-shell .stitch-models-page [data-use-as-menu]>div>button{margin:0!important;border:0!important;border-bottom:1px solid #000!important;background:#fff!important;color:#000!important;box-shadow:none!important}
+#root .indra-app-shell .stitch-models-page [data-use-as-menu]>div>button:last-of-type{border-bottom:0!important}
+#root .indra-app-shell .stitch-models-page [data-use-as-menu]>div>div{border-color:#000!important;background:#f5f5f5!important;color:#525252!important}
+#root .indra-app-shell .stitch-models-page [data-use-as-menu]>div>button:hover{background:var(--swiss-red)!important;color:#fff!important;border-bottom-color:#000!important}
+
+/* Final interaction contract: one hover language across all application pages. */
+:root{--ko-citron:var(--swiss-red);--color-success:var(--swiss-red)}
+#root .indra-app-shell .indra-content :is(.text-success,.text-primary){color:var(--swiss-red)!important}
+#root .indra-app-shell .stitch-page button:not([role="switch"]):not([role="radio"]):hover,
+#root .indra-app-shell .stitch-page [role="button"]:not([role="switch"]):not([role="radio"]):hover{background:var(--swiss-red)!important;color:#fff!important;border-color:var(--swiss-red)!important}
+#root .indra-app-shell .stitch-page button:not([role="switch"]):not([role="radio"]):hover *,
+#root .indra-app-shell .stitch-page [role="button"]:not([role="switch"]):not([role="radio"]):hover *{color:#fff!important;stroke:currentColor!important}
+#root .indra-app-shell .stitch-page table tbody tr:hover{background:var(--swiss-red-soft)!important;color:#000!important}
+#root .indra-app-shell .stitch-page table tbody tr:hover *{color:#000!important}
+
+/* Segments remain separate compact tabs with a deliberate breathing gap. */
+#root .indra-app-shell [role="radiogroup"]{gap:6px!important}
+#root .indra-app-shell [role="radiogroup"]>[role="radio"]{margin:0!important}
+
+/* Drop area is intentionally a soft exception to the solid action hover. */
+#root .indra-app-shell .stitch-knowledge-page button[aria-label="Upload files"]:hover{background:var(--swiss-red-soft)!important;color:#000!important;border-color:var(--swiss-red)!important}
+#root .indra-app-shell .stitch-knowledge-page button[aria-label="Upload files"]:hover *{color:#000!important;stroke:currentColor!important}

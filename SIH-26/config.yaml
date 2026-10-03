@@ -1,0 +1,411 @@
+model:
+  default: indra-auto
+  provider: workbench
+  key_env: WORKBENCH_API_KEY
+  max_tokens: 4096
+  context_length: 65536
+  base_url: http://127.0.0.1:8000/v1
+providers:
+  workbench:
+    api: http://127.0.0.1:8000/v1
+    key_env: WORKBENCH_API_KEY
+    transport: chat_completions
+    context_length: 65536
+    models:
+      indra-auto:
+        context_length: 65536
+        supports_vision: true
+      indra-general:
+        context_length: 65536
+      indra-engineer:
+        context_length: 65536
+      indra-analyst:
+        context_length: 65536
+      indra-writer:
+        context_length: 8192
+      indra-vision:
+        context_length: 16384
+        supports_vision: true
+      gemma-2-2b-it:
+        context_length: 65536
+      qwen2-vl-ocr-2b-instruct:
+        context_length: 65536
+      qwen3.5-4b:
+        context_length: 65536
+    extra_body:
+      chat_template_kwargs:
+        enable_thinking: false
+    default_model: indra-auto
+    discover_models: false
+    base_url: http://127.0.0.1:8000/v1
+database:
+  journal_mode: wal
+runtime:
+  nofile_soft_limit: 4096
+agent:
+  max_turns: 90
+  service_tier: ''
+  fast_auto_seconds: 60
+  disabled_toolsets:
+  - vision
+  - a2a
+  - bot_room
+  - browser
+  - computer_use
+  - context_engine
+  - discord
+  - discord_admin
+  - feishu_doc
+  - feishu_drive
+  - homeassistant
+  - image_gen
+  - search
+  - spotify
+  - stt
+  - tts
+  - video
+  - video_gen
+  - x_search
+  - yuanbao
+  verbose: false
+  reasoning_effort: medium
+  personalities: {}
+terminal:
+  backend: local
+  cwd: .
+  timeout: 180
+  home_mode: auto
+  docker_image: indra-documents:1
+  container_cpu: 1
+  container_memory: 5120
+  container_disk: 51200
+  container_persistent: true
+  docker_mount_cwd_to_workspace: true
+  docker_network: false
+  lifetime_seconds: 300
+browser:
+  inactivity_timeout: 120
+  extension_control:
+    enabled: false
+tool_loop_guardrails:
+  warnings_enabled: true
+  hard_stop_enabled: false
+  non_interactive_hard_stop_enabled: true
+  warn_after:
+    exact_failure: 2
+    same_tool_failure: 3
+    idempotent_no_progress: 2
+  hard_stop_after:
+    exact_failure: 5
+    same_tool_failure: 8
+    idempotent_no_progress: 5
+compression:
+  enabled: true
+  checkpoint_required: false
+  progress_notices: false
+  threshold: 0.75
+  target_ratio: 0.2
+  protect_last_n: 4
+  min_tail_user_messages: 1
+  max_attempts: 5
+  proactive_prune_tokens: 0
+  proactive_prune_min_result_chars: 8000
+  proactive_prune_min_reclaim_tokens: 4096
+  hygiene_max_turn_hold_seconds: 10
+  protect_first_n: 3
+  codex_gpt55_autoraise: true
+  codex_app_server_auto: native
+  codex_responses_native: false
+  idle_compact_after_seconds: 0
+prompt_caching:
+  cache_ttl: 5m
+auxiliary:
+  compression:
+    provider: workbench
+    model: qwen3.5-4b
+    base_url: http://127.0.0.1:8000/v1
+    context_length: 65536
+    max_tokens: 4096
+  title_generation:
+    enabled: false
+display:
+  compact: false
+  busy_input_mode: interrupt
+  bell_on_complete: false
+  bell_on_prompt: false
+  show_reasoning: false
+  background_process_notifications: concise
+  streaming: true
+  skin: indra
+  interim_assistant_messages: true
+  tool_progress: all
+  cleanup_progress: false
+  long_running_notifications: true
+  busy_ack_detail: true
+dashboard:
+  theme: default
+  font: theme
+stt:
+  enabled: true
+  provider: local
+  language: en
+  local:
+    model: base
+tts:
+  enabled: true
+  provider: sapi
+  sapi:
+    rate: 185
+  local:
+    rate: 185
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  memory_char_limit: 2200
+  user_char_limit: 1375
+  nudge_interval: 10
+delegation:
+  max_iterations: 250
+moa:
+  presets:
+    default:
+      reference_models:
+      - provider: openai-codex
+        model: gpt-5.5
+        enabled: false
+      - provider: openrouter
+        model: deepseek/deepseek-v4-pro
+        enabled: false
+      aggregator:
+        provider: workbench
+        model: indra-general
+      degraded_reference_policy: loud
+      fanout: user_turn
+  reference_models:
+  - provider: openai-codex
+    model: gpt-5.5
+    enabled: false
+  - provider: openrouter
+    model: deepseek/deepseek-v4-pro
+    enabled: false
+  aggregator:
+    provider: workbench
+    model: indra-general
+  degraded_reference_policy: loud
+  max_tokens: 4096
+  fanout: user_turn
+  enabled: true
+skills:
+  creation_nudge_interval: 15
+  disabled:
+  - airtable
+  - apple-notes
+  - apple-reminders
+  - arxiv
+  - baoyu-infographic
+  - blocked-page-recovery
+  - box
+  - claude-code
+  - codex
+  - competitor-news-monitor
+  - computer-use
+  - design-md
+  - dogfood
+  - email-inbox-triage
+  - findmy
+  - gif-search
+  - google-workspace
+  - himalaya
+  - imessage
+  - inspecting-hermes-desktop-dom
+  - llm-wiki
+  - manim-video
+  - maps
+  - meeting-action-items
+  - notion
+  - opencode
+  - p5js
+  - popular-web-designs
+  - product-price-monitor
+  - sdlc-review
+  - songsee
+  - spike
+  - teams-meeting-pipeline
+  - xurl
+  - youtube-content
+security:
+  allow_lazy_installs: true
+  dependency_policy:
+    mode: offline
+    wheelhouse: ''
+    artifactory_url: ''
+    request_missing: true
+kanban:
+  review_dispatch: true
+code_execution:
+  timeout: 300
+  max_tool_calls: 50
+tools:
+  tool_search:
+    enabled: 'off'
+gateway:
+  signal_interrupt_grace_timeout: 1
+  delivery_ledger: true
+  platform_connect_timeout: 30
+  loop_watchdog: true
+  loop_watchdog_probe_interval_s: 30
+  loop_watchdog_probe_timeout_s: 10
+  loop_watchdog_max_strikes: 3
+  startup_watchdog: true
+  startup_watchdog_timeout_seconds: 300
+  write_sessions_json: true
+  scale_to_zero:
+    idle_timeout_minutes: 2
+  restart_loop_guard:
+    max_restarts: 3
+    window_seconds: 60
+    max_gap_seconds: 300
+  respawn_storm:
+    max_starts: 5
+    window_seconds: 120
+  message_timestamps:
+    enabled: false
+  max_inbound_media_bytes: 134217728
+  trust_env: true
+  strict: false
+  media_delivery_allow_dirs: []
+  trust_recent_files: true
+  trust_recent_files_seconds: 600
+  api_server:
+    max_concurrent_runs: 10
+streaming:
+  enabled: false
+onboarding:
+  seen:
+    tool_progress_prompt: true
+    busy_input_prompt: true
+telemetry:
+  shared_metrics:
+    enabled: false
+    send: false
+updates:
+  pre_update_backup: false
+  backup_keep: 5
+  non_interactive_local_changes: stash
+_config_version: 40
+model_aliases:
+  auto:
+    model: indra-auto
+    provider: custom:workbench
+    key_env: WORKBENCH_API_KEY
+  general:
+    model: indra-general
+    provider: custom:workbench
+    key_env: WORKBENCH_API_KEY
+  coder:
+    model: indra-engineer
+    provider: custom:workbench
+    key_env: WORKBENCH_API_KEY
+  maths:
+    model: indra-analyst
+    provider: custom:workbench
+    key_env: WORKBENCH_API_KEY
+  writer:
+    model: indra-writer
+    provider: custom:workbench
+    key_env: WORKBENCH_API_KEY
+  ocr:
+    model: indra-vision
+    provider: custom:workbench
+    key_env: WORKBENCH_API_KEY
+  hermes:
+    model: indra-hermes
+    provider: custom:workbench
+    key_env: WORKBENCH_API_KEY
+session_reset:
+  mode: none
+  idle_minutes: 1440
+  at_hour: 4
+group_sessions_per_user: true
+platform_toolsets:
+  cli:
+  - file
+  - skills
+  - terminal
+  - delegation
+  - clarify
+  - code_execution
+  - cronjob
+  - kanban
+  - memory
+  - project
+  - session_search
+  - todo
+  telegram:
+  - hermes-telegram
+  discord:
+  - hermes-discord
+  whatsapp:
+  - hermes-whatsapp
+  slack:
+  - hermes-slack
+  signal:
+  - hermes-signal
+  homeassistant:
+  - hermes-homeassistant
+  qqbot:
+  - hermes-qqbot
+  yuanbao:
+  - hermes-yuanbao
+  teams:
+  - hermes-teams
+  google_chat:
+  - hermes-google_chat
+smart_model_routing:
+  enabled: true
+  model: indra-auto
+  policy: latest_user_request
+custom_providers:
+- name: Local (127.0.0.1:11434)
+  base_url: http://127.0.0.1:11434/v1
+  model: qwen2.5-coder:7b
+  models:
+    my-model:latest: {}
+  models_discovered: true
+mcp_servers:
+  clickup:
+    url: https://mcp.clickup.com/mcp
+    auth: oauth
+    enabled: false
+known_plugin_toolsets:
+  cli:
+  - a2a
+  - spotify
+known_builtin_toolsets:
+  cli:
+  - browser
+  - clarify
+  - code_execution
+  - computer_use
+  - context_engine
+  - cronjob
+  - delegation
+  - discord
+  - discord_admin
+  - file
+  - homeassistant
+  - image_gen
+  - memory
+  - session_search
+  - skills
+  - spotify
+  - stt
+  - terminal
+  - todo
+  - tts
+  - video
+  - video_gen
+  - vision
+  - web
+  - x_search
+  - yuanbao

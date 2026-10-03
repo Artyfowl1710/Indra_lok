@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="INDRA trishul">
+  <rect width="64" height="64" rx="15" fill="#181c22"/>
+  <path fill="#39d9ec" d="M10 5c-2.5 10-3 25-1 39l21.5 14a2.7 2.7 0 0 0 3 0L55 44c2-14 1.5-29-1-39-2.5 10-4 23-4 34L32 51 14 39c0-11-1.5-24-4-34Z"/>
+  <path fill="#39d9ec" d="M32 17c-3.3 7-5 14-5 21 0 4.3 2.2 7 5 7s5-2.7 5-7c0-7-1.7-14-5-21Z"/>
+</svg>

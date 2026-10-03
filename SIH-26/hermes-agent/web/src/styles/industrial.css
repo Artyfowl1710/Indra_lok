@@ -1,0 +1,1196 @@
+/**
+ * industrial.css — Industrial Skeuomorphism Chrome Layer
+ *
+ * Scoped entirely to [data-theme-name="industrial"].  Zero impact on any
+ * other theme — these rules never fire unless the Industrial preset is
+ * selected.  Import order: AFTER neu.css (some rules intentionally
+ * override .neu-* defaults at equal specificity inside the scope guard).
+ *
+ * Design principles implemented here:
+ *   • Consistent top-left 45° light source
+ *   • Physical button press physics (translate + shadow inversion)
+ *   • LED status indicators (colour + glow + pulse animation)
+ *   • Noise / grain texture overlay on the chassis background
+ *   • Corner screw pseudo-elements on card-level panels
+ *   • Vent slot decoration on cards
+ *   • Monospace + uppercase forced on metadata labels
+ *   • Active nav link orange accent LED dot
+ *   • Input fields — deep recessed well with orange focus glow
+ *   • Safety-orange primary button with pressed-state physics
+ *   • Sidebar logo / brand block — stamped label treatment
+ *   • Version badge — mechanical mono pill
+ *   • SidebarStatusStrip — LED-augmented gateway status
+ *   • Terminal pane kept dark (exclusion via data-chat-active)
+ *   • Keyboard animations — easing constants matching design spec
+ */
+
+/* ================================================================== */
+/*  14. BUTTONS & INPUTS — GENERIC OVERRIDES                          */
+/* ================================================================== */
+
+/* Catch generic buttons (flat Tailwind boxes) and make them neumorphic */
+[data-theme-name="industrial"] button:not([class*="ind-"]):not([role="tab"]):not([role="switch"]):not([class*="transparent"]):not([class*="ghost"]),
+[data-theme-name="industrial"] .btn,
+[data-theme-name="industrial"] [role="button"]:not([class*="ind-"]) {
+  background: var(--neu-bg);
+  box-shadow: var(--ind-shadow-raised-sm);
+  color: var(--neu-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 150ms var(--ind-ease-press);
+}
+
+[data-theme-name="industrial"] button:not([class*="ind-"]):not([role="tab"]):not([role="switch"]):not([class*="transparent"]):not([class*="ghost"]):hover,
+[data-theme-name="industrial"] .btn:hover,
+[data-theme-name="industrial"] [role="button"]:not([class*="ind-"]):hover {
+  box-shadow: var(--ind-shadow-floating);
+  transform: translateY(-1px);
+}
+
+[data-theme-name="industrial"] button:not([class*="ind-"]):not([role="tab"]):not([role="switch"]):not([class*="transparent"]):not([class*="ghost"]):active,
+[data-theme-name="industrial"] .btn:active,
+[data-theme-name="industrial"] [role="button"]:not([class*="ind-"]):active {
+  box-shadow: var(--ind-shadow-pressed);
+  transform: translateY(1px);
+}
+
+/* Primary buttons should look like safety switches */
+[data-theme-name="industrial"] button.bg-primary,
+[data-theme-name="industrial"] .btn-primary {
+  background: var(--theme-primary) !important;
+  color: #fff !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  box-shadow: 
+    4px 4px 10px rgba(163, 177, 198, 0.4),
+    -4px -4px 10px rgba(255, 255, 255, 0.5),
+    inset 1px 1px 2px rgba(255,255,255,0.4),
+    inset -1px -1px 2px rgba(0,0,0,0.2) !important;
+  border-radius: 8px;
+}
+
+[data-theme-name="industrial"] button.bg-primary:active,
+[data-theme-name="industrial"] .btn-primary:active {
+  box-shadow: 
+    inset 4px 4px 8px rgba(0,0,0,0.3),
+    inset -4px -4px 8px rgba(255,255,255,0.2) !important;
+}
+
+/* Secondary ghost buttons (icon buttons, small actions) */
+[data-theme-name="industrial"] button[class*="transparent"],
+[data-theme-name="industrial"] button[class*="ghost"] {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--text-text-secondary);
+}
+[data-theme-name="industrial"] button[class*="transparent"]:hover,
+[data-theme-name="industrial"] button[class*="ghost"]:hover {
+  background: var(--color-secondary) !important;
+  color: var(--text-text-primary);
+  box-shadow: inset 2px 2px 4px rgba(163, 177, 198, 0.2) !important;
+}
+
+/* Inputs and Selects */
+[data-theme-name="industrial"] input[type="text"],
+[data-theme-name="industrial"] input[type="number"],
+[data-theme-name="industrial"] input[type="password"],
+[data-theme-name="industrial"] select,
+[data-theme-name="industrial"] textarea {
+  background: var(--neu-bg) !important;
+  box-shadow: var(--ind-shadow-recessed) !important;
+  border: 1px solid transparent !important;
+  color: var(--text-text-primary) !important;
+  border-radius: 8px;
+  transition: all 200ms ease;
+}
+
+[data-theme-name="industrial"] input:focus,
+[data-theme-name="industrial"] select:focus,
+[data-theme-name="industrial"] textarea:focus {
+  outline: none !important;
+  border-color: rgba(255, 71, 87, 0.5) !important; /* Safety orange glow */
+  box-shadow: var(--ind-shadow-recessed), 0 0 0 2px rgba(255, 71, 87, 0.2) !important;
+}
+
+/* ================================================================== */
+/*  1. ROOT OVERRIDES                                                   */
+/*  Remap @nous-research/ui shadcn token vars so library components     */
+/*  automatically pick up the Industrial palette.                       */
+/*                                                                      */
+/*  Text contrast targets on #E0E5EC chassis:                          */
+/*    foreground (#1e2228):      ~12:1  WCAG AAA                        */
+/*    secondary  (#374151):       ~8:1  WCAG AAA                        */
+/*    muted-fg   (#4a5568):       ~6:1  WCAG AA                         */
+/*    tertiary   (#5a6677):       ~5:1  WCAG AA                         */
+/*    disabled   (#7c8fa3):       ~3.5:1  decorative only              */
+/* ================================================================== */
+
+[data-theme-name="industrial"] {
+  /* Background — always the chassis colour */
+  background: #e0e5ec;
+  color: #1e2228;
+
+  /* Shadcn-compat token cascade rewire */
+  --color-background:           #e0e5ec;
+  --color-foreground:           #1e2228;
+  --color-card:                 #e0e5ec;
+  --color-card-foreground:      #1e2228;
+  --color-popover:              #e0e5ec;
+  --color-popover-foreground:   #1e2228;
+  --color-primary:              #ff4757;
+  --color-primary-foreground:   #ffffff;
+  --color-secondary:            #d1d9e6;
+  --color-secondary-foreground: #1e2228;
+  --color-muted:                #d1d9e6;
+  --color-muted-foreground:     #4a5568;  /* 6:1 contrast — WCAG AA */
+  --color-accent:               color-mix(in srgb, #ff4757 8%, #e0e5ec);
+  --color-accent-foreground:    #1e2228;
+  --color-destructive:          #c53030;  /* darker red for light bg */
+  --color-destructive-foreground: #ffffff;
+  --color-border:               rgba(163, 177, 198, 0.45);  /* visible groove */
+  --color-input:                #e0e5ec;
+  --color-ring:                 #ff4757;
+
+  /* Semantic text tiers — override neu.css defaults */
+  --neu-text-primary:  #1e2228;   /* near-black — body + titles */
+  --neu-text-muted:    #374151;   /* 8:1 — secondary labels */
+  --neu-text-tertiary: #4a5568;   /* 6:1 — captions, meta, small labels */
+  --neu-text-accent:   #cc1f2e;   /* safety red accent text */
+
+  /* Text utility overrides */
+  --text-text-primary:    #1e2228;
+  --text-text-secondary:  #374151;
+  --text-text-tertiary:   #4a5568;
+  --text-text-disabled:   #7c8fa3;
+
+  /* Radius — 16px base matches --neu-radius-base */
+  --radius: 1rem;
+
+  /* Transition timing — mechanical spring physics */
+  --ind-ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ind-ease-press:  cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Text utility class colour overrides ─────────────────────────────
+ * Tailwind generates classes like .text-muted-foreground which read from
+ * CSS variables — but only if the theme correctly sets them. Since the
+ * industrial theme sets --color-muted-foreground to #4a5568, we reinforce
+ * text colour on the key semantic classes that exist in compiled Tailwind.
+ * Use !important sparingly — only where Tailwind inline vars win otherwise.
+ */
+[data-theme-name="industrial"] .text-muted-foreground {
+  color: #4a5568 !important;
+}
+[data-theme-name="industrial"] .text-foreground {
+  color: #1e2228 !important;
+}
+[data-theme-name="industrial"] .text-text-secondary {
+  color: #374151 !important;
+}
+[data-theme-name="industrial"] .text-text-tertiary {
+  color: #4a5568 !important;
+}
+[data-theme-name="industrial"] .text-text-disabled {
+  color: #7c8fa3 !important;
+}
+/* Sidebar-specific hardcoded greys — these are hex literals in JSX */
+[data-theme-name="industrial"] [style*="color: rgb(107, 114, 128)"],
+[data-theme-name="industrial"] [style*="color:#6B7280"],
+[data-theme-name="industrial"] .text-\[\#6B7280\] {
+  color: #374151 !important;
+}
+[data-theme-name="industrial"] [style*="color: rgb(139, 149, 165)"],
+[data-theme-name="industrial"] .text-\[\#8B95A5\] {
+  color: #4a5568 !important;
+}
+
+/* ================================================================== */
+/*  2. CHASSIS BACKGROUND + NOISE TEXTURE                              */
+/*  The noise simulates the micro-texture of matte ABS plastic.        */
+/* ================================================================== */
+
+[data-theme-name="industrial"] body,
+[data-theme-name="industrial"] #root {
+  background: #e0e5ec;
+  color: #1e2228;
+}
+
+/* Noise overlay — SVG fractal noise at ~2.5% opacity, blend: overlay */
+[data-theme-name="industrial"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  mix-blend-mode: overlay;
+}
+
+/* ================================================================== */
+/*  3. BUTTON PHYSICS — Physical key press simulation                  */
+/*  Hover: brightness lift.  Active: translate-y + shadow inversion.   */
+/* ================================================================== */
+
+/* Catch the @nous-research/ui Button component root element. */
+[data-theme-name="industrial"] button,
+[data-theme-name="industrial"] [role="button"] {
+  transition:
+    box-shadow 150ms var(--ind-ease-press),
+    transform   150ms var(--ind-ease-press),
+    background  200ms var(--ind-ease-press),
+    filter      200ms var(--ind-ease-press);
+}
+
+[data-theme-name="industrial"] button:hover:not(:disabled):not([aria-disabled="true"]),
+[data-theme-name="industrial"] [role="button"]:hover:not(:disabled):not([aria-disabled="true"]) {
+  filter: brightness(1.04);
+}
+
+[data-theme-name="industrial"] button:active:not(:disabled):not([aria-disabled="true"]),
+[data-theme-name="industrial"] [role="button"]:active:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(1.5px);
+  filter: brightness(0.97);
+}
+
+/* Primary buttons — orange gradient + pressed shadow inversion */
+[data-theme-name="industrial"] button[class*="bg-primary"],
+[data-theme-name="industrial"] .ind-btn-primary {
+  background: linear-gradient(135deg, #ff4757 0%, #e8354a 100%);
+  box-shadow:
+    5px 5px 10px rgba(166, 50, 60, 0.35),
+    -3px -3px 8px rgba(255, 130, 140, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+[data-theme-name="industrial"] button[class*="bg-primary"]:active:not(:disabled),
+[data-theme-name="industrial"] .ind-btn-primary:active:not(:disabled) {
+  background: linear-gradient(135deg, #cc1f2e 0%, #9e1a24 100%);
+  box-shadow: var(--ind-shadow-pressed);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(2px);
+}
+
+/* Ghost buttons — clear text with subtle press */
+[data-theme-name="industrial"] button[class*="ghost"],
+[data-theme-name="industrial"] [class*="ghost"][role="button"] {
+  color: #374151;
+}
+
+[data-theme-name="industrial"] button[class*="ghost"]:hover:not(:disabled) {
+  color: #1e2228;
+  background: rgba(163, 177, 198, 0.2);
+}
+
+/* Outlined buttons */
+[data-theme-name="industrial"] button[class*="outlined"],
+[data-theme-name="industrial"] [class*="outlined"][role="button"] {
+  box-shadow: var(--ind-shadow-raised-sm);
+  border: none;
+  color: #1e2228;
+  background: #e0e5ec;
+}
+
+[data-theme-name="industrial"] button[class*="outlined"]:active:not(:disabled) {
+  box-shadow: var(--ind-shadow-pressed);
+}
+
+/* ================================================================== */
+/*  4. CARD / PANEL — Bolted module aesthetic                          */
+/*  All @nous-research/ui Card components get neumorphic raised shadow. */
+/*  Corner screws + vent slots via ::before/::after on .ind-card only.  */
+/* ================================================================== */
+
+/* Apply lifted shadow to ALL Card elements — the library uses
+ * [data-slot="card"] or the className "card" root element */
+[data-theme-name="industrial"] [data-slot="card"],
+[data-theme-name="industrial"] [class*="rounded"][class*="border"],
+[data-theme-name="industrial"] .card {
+  background: #e0e5ec;
+  border: none !important;
+  box-shadow: var(--ind-shadow-card);
+  border-radius: 16px;
+  transition:
+    box-shadow 300ms var(--ind-ease-spring),
+    transform   300ms var(--ind-ease-spring);
+}
+
+/* Card header — light neumorphic inset divider instead of a border */
+[data-theme-name="industrial"] [data-slot="card-header"],
+[data-theme-name="industrial"] [class*="CardHeader"] {
+  border-bottom: none;
+  box-shadow: 0 1px 0 rgba(163, 177, 198, 0.5), 0 2px 0 rgba(255, 255, 255, 0.6);
+  padding-bottom: 0.875rem;
+}
+
+/* Card title text — darker + heavier */
+[data-theme-name="industrial"] [data-slot="card-title"],
+[data-theme-name="industrial"] [class*="CardTitle"] {
+  color: #1e2228;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Card content — ensure text inherits dark colour */
+[data-theme-name="industrial"] [data-slot="card-content"],
+[data-theme-name="industrial"] [class*="CardContent"] {
+  color: #1e2228;
+}
+
+/* .ind-card — enhanced version with corner screws + vent slots */
+[data-theme-name="industrial"] .ind-card {
+  position: relative;
+}
+
+/* Corner screws — four radial-gradient dots at 11px from each corner */
+[data-theme-name="industrial"] .ind-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 11px 11px,
+      rgba(0, 0, 0, 0.18) 0px, rgba(0, 0, 0, 0.18) 2.5px,
+      rgba(255, 255, 255, 0.12) 2.5px, rgba(255, 255, 255, 0.12) 3.5px,
+      transparent 3.5px),
+    radial-gradient(circle at calc(100% - 11px) 11px,
+      rgba(0, 0, 0, 0.18) 0px, rgba(0, 0, 0, 0.18) 2.5px,
+      rgba(255, 255, 255, 0.12) 2.5px, rgba(255, 255, 255, 0.12) 3.5px,
+      transparent 3.5px),
+    radial-gradient(circle at 11px calc(100% - 11px),
+      rgba(0, 0, 0, 0.18) 0px, rgba(0, 0, 0, 0.18) 2.5px,
+      rgba(255, 255, 255, 0.12) 2.5px, rgba(255, 255, 255, 0.12) 3.5px,
+      transparent 3.5px),
+    radial-gradient(circle at calc(100% - 11px) calc(100% - 11px),
+      rgba(0, 0, 0, 0.18) 0px, rgba(0, 0, 0, 0.18) 2.5px,
+      rgba(255, 255, 255, 0.12) 2.5px, rgba(255, 255, 255, 0.12) 3.5px,
+      transparent 3.5px);
+  z-index: 1;
+}
+
+/* Vent slots — three recessed pill shapes in top-right corner */
+[data-theme-name="industrial"] .ind-card::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 22px;
+  width: 18px;
+  height: 6px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.15),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+  z-index: 1;
+}
+
+[data-theme-name="industrial"] .ind-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--ind-shadow-floating);
+}
+
+/* ================================================================== */
+/*  5. INPUT FIELDS — Deep recessed wells                              */
+/* ================================================================== */
+
+[data-theme-name="industrial"] [data-neu="true"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+[data-theme-name="industrial"] [data-neu="true"] textarea,
+[data-theme-name="industrial"] [data-neu="true"] select,
+[data-theme-name="industrial"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([class*="terminal"]),
+[data-theme-name="industrial"] textarea:not([class*="terminal"]) {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0.01em;
+  color: #1e2228;
+  background: #e0e5ec;
+  border: none !important;
+  outline: none !important;
+  box-shadow:
+    inset 5px 5px 9px rgba(163, 177, 198, 0.7),
+    inset -5px -5px 9px rgba(255, 255, 255, 0.65);
+}
+
+[data-theme-name="industrial"] [data-neu="true"] input:focus:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+[data-theme-name="industrial"] [data-neu="true"] textarea:focus,
+[data-theme-name="industrial"] input:focus:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([class*="terminal"]),
+[data-theme-name="industrial"] textarea:focus:not([class*="terminal"]) {
+  box-shadow:
+    inset 8px 8px 18px rgba(163, 177, 198, 0.75),
+    inset -8px -8px 18px rgba(255, 255, 255, 0.65),
+    0 0 0 2px #e0e5ec,
+    0 0 0 4px #ff4757,
+    0 0 0 6px rgba(255, 71, 87, 0.2);
+}
+
+/* Input placeholder — must stay readable but clearly secondary */
+[data-theme-name="industrial"] input::placeholder,
+[data-theme-name="industrial"] textarea::placeholder {
+  color: #7c8fa3;
+}
+
+/* ================================================================== */
+/*  6. NAVIGATION — Active state + orange LED dot                      */
+/* ================================================================== */
+
+/* All nav link text — dark enough on chassis */
+[data-theme-name="industrial"] nav a {
+  color: #374151;
+}
+
+/* Active nav link: deeper inset + orange accent icon */
+[data-theme-name="industrial"] nav a[aria-current="page"],
+[data-theme-name="industrial"] nav a.active {
+  box-shadow: var(--ind-shadow-pressed) !important;
+  color: #1e2228 !important;
+  font-weight: 600;
+}
+
+/* LED dot before active nav item — 5px orange pill */
+[data-theme-name="industrial"] nav a[aria-current="page"]::before,
+[data-theme-name="industrial"] nav a.active::before {
+  content: '';
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ff4757;
+  box-shadow: var(--ind-glow-orange);
+  flex-shrink: 0;
+  animation: ind-led-breathe 2.4s ease-in-out infinite;
+}
+
+/* Nav icon: orange tint when active */
+[data-theme-name="industrial"] nav a[aria-current="page"] svg,
+[data-theme-name="industrial"] nav a.active svg {
+  color: #ff4757 !important;
+  filter: drop-shadow(0 0 3px rgba(255, 71, 87, 0.5));
+}
+
+/* Nav hover: subtle raised lift */
+[data-theme-name="industrial"] nav a:not([aria-current="page"]):not(.active):hover {
+  box-shadow: var(--ind-shadow-raised-sm);
+  color: #1e2228 !important;
+}
+
+/* Nav icon default: readable medium grey */
+[data-theme-name="industrial"] nav a:not([aria-current="page"]) svg {
+  color: #4a5568;
+}
+
+/* ================================================================== */
+/*  7. SIDEBAR — Mechanical chrome                                     */
+/* ================================================================== */
+
+[data-theme-name="industrial"] aside[id="app-sidebar"] {
+  box-shadow:
+    12px 0 24px rgba(163, 177, 198, 0.45),
+    -1px 0 0 rgba(255, 255, 255, 0.7) inset;
+  border-right: none;
+}
+
+/* Brand / logo block — stamped label treatment */
+[data-theme-name="industrial"] aside[id="app-sidebar"] span[class*="font-extrabold"],
+[data-theme-name="industrial"] aside[id="app-sidebar"] span[class*="font-display"] {
+  font-family: "Inter", system-ui, sans-serif !important;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1e2228;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9), 0 -1px 0 rgba(0, 0, 0, 0.08);
+}
+
+/* Descriptor line — machine-stamped subtext */
+[data-theme-name="industrial"] aside[id="app-sidebar"] span[class*="tracking-[0.14em]"] {
+  font-family: "JetBrains Mono", ui-monospace, monospace !important;
+  letter-spacing: 0.14em;
+  color: #4a5568;  /* was #6b7280 — darkened by one tier */
+  text-transform: uppercase;
+}
+
+/* Section headings (PLUGINS, SYSTEM, etc.) — monospace uppercase stamps */
+[data-theme-name="industrial"] aside[id="app-sidebar"] span[class*="tracking-[0.12em]"],
+[data-theme-name="industrial"] aside[id="app-sidebar"] span[class*="text-text-tertiary"] {
+  font-family: "JetBrains Mono", ui-monospace, monospace !important;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #4a5568;  /* was #8b95a5 — much darker now */
+  font-weight: 700;
+}
+
+/* Nav item text — hardcoded greys in JSX → force to readable levels */
+[data-theme-name="industrial"] aside[id="app-sidebar"] span.text-\[\#6B7280\],
+[data-theme-name="industrial"] aside[id="app-sidebar"] [class*="text-[#6B7280]"] {
+  color: #374151 !important;
+}
+
+/* Sidebar collapse / expand button — neumorphic icon housing */
+[data-theme-name="industrial"] aside[id="app-sidebar"] button[aria-label*="ollapse"],
+[data-theme-name="industrial"] aside[id="app-sidebar"] button[aria-label*="xpand"] {
+  box-shadow: var(--ind-shadow-raised-sm);
+  border-radius: 10px;
+  transition:
+    box-shadow 150ms var(--ind-ease-press),
+    transform   150ms var(--ind-ease-press);
+}
+
+[data-theme-name="industrial"] aside[id="app-sidebar"] button[aria-label*="ollapse"]:active,
+[data-theme-name="industrial"] aside[id="app-sidebar"] button[aria-label*="xpand"]:active {
+  box-shadow: var(--ind-shadow-pressed);
+  transform: translateY(1px);
+}
+
+/* ================================================================== */
+/*  8. STATUS STRIP — LED-augmented gateway indicator                  */
+/* ================================================================== */
+
+/* SidebarStatusStrip has hardcoded text-[#6B7280] and text-[#8B95A5]  */
+[data-theme-name="industrial"] a[href="/sessions"] {
+  color: #374151 !important;
+}
+
+/* Force the label text up to a readable colour */
+[data-theme-name="industrial"] a[href="/sessions"] span.text-\[\#8B95A5\] {
+  color: #4a5568 !important;
+}
+
+[data-theme-name="industrial"] a[href="/sessions"] span.text-\[\#6B7280\] {
+  color: #374151 !important;
+}
+
+/* Active sessions count */
+[data-theme-name="industrial"] a[href="/sessions"] span.text-\[\#3D4852\],
+[data-theme-name="industrial"] a[href="/sessions"] span[class*="text-[#3D4852]"] {
+  color: #1e2228 !important;
+  font-weight: 600;
+}
+
+/* ================================================================== */
+/*  9. VERSION BADGE + ORG LINK — Mechanical pill / label              */
+/* ================================================================== */
+
+/* Version badge pill — deeper inset + mono font */
+[data-theme-name="industrial"] span[class*="neu-inset-xs"] {
+  font-family: "JetBrains Mono", ui-monospace, monospace !important;
+  letter-spacing: 0.08em;
+  font-size: 0.6875rem;
+  color: #374151;  /* was #6b7280 — darkened */
+  background: #e0e5ec;
+  box-shadow:
+    inset 3px 3px 5px rgba(163, 177, 198, 0.65),
+    inset -3px -3px 5px rgba(255, 255, 255, 0.55);
+}
+
+/* Org link — orange accent on hover */
+[data-theme-name="industrial"] a[href*="nousresearch"] {
+  font-family: "JetBrains Mono", ui-monospace, monospace !important;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #cc1f2e !important;
+  transition: all 200ms var(--ind-ease-press);
+}
+
+[data-theme-name="industrial"] a[href*="nousresearch"]:hover {
+  color: #ff4757 !important;
+  text-shadow: 0 0 8px rgba(255, 71, 87, 0.4);
+}
+
+/* SidebarFooter hardcoded teal link (#00A896) → Industrial orange */
+[data-theme-name="industrial"] a[class*="text-[#00A896]"] {
+  color: #cc1f2e !important;
+}
+
+/* ================================================================== */
+/*  10. TYPOGRAPHY OVERRIDES                                            */
+/* ================================================================== */
+
+/* Monospace for metadata, stats, small tracking labels */
+[data-theme-name="industrial"] .font-mono-ui,
+[data-theme-name="industrial"] [class*="tabular-nums"],
+[data-theme-name="industrial"] [class*="tracking-[0.06em]"],
+[data-theme-name="industrial"] [class*="tracking-[0.07em]"],
+[data-theme-name="industrial"] [class*="tracking-[0.1em]"],
+[data-theme-name="industrial"] .font-mondwest,
+[data-theme-name="industrial"] .font-rules,
+[data-theme-name="industrial"] [class*="font-mondwest"],
+[data-theme-name="industrial"] [class*="font-rules"] {
+  font-family: "JetBrains Mono", ui-monospace, monospace !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+/* Primary headings — heavy Inter with emboss */
+[data-theme-name="industrial"] h1,
+[data-theme-name="industrial"] h2 {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #1e2228;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+[data-theme-name="industrial"] h3,
+[data-theme-name="industrial"] h4 {
+  color: #1e2228;
+  font-weight: 600;
+}
+
+/* Small text — bump readability */
+[data-theme-name="industrial"] p,
+[data-theme-name="industrial"] span:not([class*="badge"]):not([class*="ind-led"]) {
+  color: inherit;
+}
+
+/* ================================================================== */
+/*  11. POPOVER / DROPDOWN MENUS                                       */
+/* ================================================================== */
+
+[data-theme-name="industrial"] [role="listbox"],
+[data-theme-name="industrial"] [role="menu"],
+[data-theme-name="industrial"] [data-radix-popper-content-wrapper] > div {
+  background: #e0e5ec;
+  box-shadow:
+    12px 12px 28px rgba(163, 177, 198, 0.7),
+    -4px -4px 16px rgba(255, 255, 255, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  border: none !important;
+  border-radius: 16px;
+  color: #1e2228;
+}
+
+/* Dropdown / menu items */
+[data-theme-name="industrial"] [role="option"],
+[data-theme-name="industrial"] [role="menuitem"] {
+  color: #1e2228;
+}
+
+[data-theme-name="industrial"] [role="option"]:hover,
+[data-theme-name="industrial"] [role="menuitem"]:hover,
+[data-theme-name="industrial"] [role="option"][aria-selected="true"] {
+  background: rgba(163, 177, 198, 0.25);
+  color: #1e2228;
+}
+
+/* ================================================================== */
+/*  12. SCROLLBAR — Thin recessed track                                */
+/* ================================================================== */
+
+[data-theme-name="industrial"] ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+[data-theme-name="industrial"] ::-webkit-scrollbar-track {
+  background: transparent;
+  box-shadow: inset 2px 2px 4px rgba(163, 177, 198, 0.4);
+  border-radius: 9999px;
+}
+
+[data-theme-name="industrial"] ::-webkit-scrollbar-thumb {
+  background: #babecc;
+  border-radius: 9999px;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+[data-theme-name="industrial"] ::-webkit-scrollbar-thumb:hover {
+  background: #ff4757;
+}
+
+[data-theme-name="industrial"] * {
+  scrollbar-width: thin;
+  scrollbar-color: #babecc transparent;
+}
+
+/* ================================================================== */
+/*  13. TERMINAL PANE — Exclusion guard                                */
+/*  These are empty intentionally — the data-chat-active isolation in  */
+/*  index.css wins; we just need to avoid accidentally overriding it.  */
+/* ================================================================== */
+
+[data-theme-name="industrial"] [data-chat-active="true"],
+[data-theme-name="industrial"] [data-chat-active="true"] * {
+  /* Let the existing data-chat-active block win — do not override */
+}
+
+/* ================================================================== */
+/*  14. BADGE OVERRIDES — Mechanical status chips                      */
+/* ================================================================== */
+
+/* Secondary / outline badges */
+[data-theme-name="industrial"] [data-tone="secondary"],
+[data-theme-name="industrial"] [data-tone="outline"] {
+  background: #d1d9e6;
+  color: #374151;
+  box-shadow:
+    inset 2px 2px 4px rgba(163, 177, 198, 0.5),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.4);
+  border: none;
+}
+
+/* Success badges — green LED style */
+[data-theme-name="industrial"] [data-tone="success"] {
+  background: color-mix(in srgb, #22c55e 15%, #e0e5ec);
+  color: #14532d;  /* much darker green text */
+  box-shadow:
+    inset 2px 2px 4px rgba(163, 177, 198, 0.5),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.4);
+  border: none;
+}
+
+/* Destructive badges — danger red */
+[data-theme-name="industrial"] [data-tone="destructive"] {
+  background: color-mix(in srgb, #c53030 12%, #e0e5ec);
+  color: #7f1d1d;  /* dark red text */
+  box-shadow:
+    inset 2px 2px 4px rgba(163, 177, 198, 0.5),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.4);
+  border: none;
+}
+
+/* Warning badges — amber */
+[data-theme-name="industrial"] [data-tone="warning"] {
+  background: color-mix(in srgb, #d97706 12%, #e0e5ec);
+  color: #78350f;  /* dark amber text */
+  box-shadow:
+    inset 2px 2px 4px rgba(163, 177, 198, 0.5),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.4);
+  border: none;
+}
+
+/* ================================================================== */
+/*  15. CHECKBOX / SWITCH / RADIO                                      */
+/* ================================================================== */
+
+[data-theme-name="industrial"] [role="switch"][data-state="checked"] {
+  background: #ff4757;
+  box-shadow: var(--ind-shadow-pressed);
+}
+
+[data-theme-name="industrial"] [role="switch"][data-state="unchecked"] {
+  background: #d1d9e6;
+  box-shadow:
+    inset 3px 3px 6px rgba(163, 177, 198, 0.6),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.5);
+}
+
+/* Checkbox — recessed square */
+[data-theme-name="industrial"] [role="checkbox"] {
+  background: #e0e5ec;
+  border: none;
+  box-shadow:
+    inset 2px 2px 5px rgba(163, 177, 198, 0.6),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.5);
+}
+
+[data-theme-name="industrial"] [role="checkbox"][data-state="checked"] {
+  background: #ff4757;
+  box-shadow:
+    inset 2px 2px 4px rgba(180, 30, 45, 0.5),
+    inset -2px -2px 4px rgba(255, 120, 130, 0.2);
+}
+
+/* ================================================================== */
+/*  16. SELECT / COMBOBOX TRIGGER                                      */
+/* ================================================================== */
+
+[data-theme-name="industrial"] [role="combobox"],
+[data-theme-name="industrial"] select {
+  box-shadow: var(--ind-shadow-recessed);
+  border: none !important;
+  background: #e0e5ec;
+  color: #1e2228;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* ================================================================== */
+/*  17. SEGMENTED TABS — Filter pills (LogsPage, SessionsPage)         */
+/*  The @nous-research/ui Segmented renders as [role="tablist"] with   */
+/*  [role="tab"] children.  Also handles FilterGroup labels.           */
+/* ================================================================== */
+
+[data-theme-name="industrial"] [role="tablist"],
+[data-theme-name="industrial"] [class*="Segmented"] {
+  background: #d1d9e6;
+  box-shadow:
+    inset 4px 4px 8px rgba(163, 177, 198, 0.65),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.55);
+  border-radius: 12px;
+  padding: 3px;
+  border: none;
+}
+
+[data-theme-name="industrial"] [role="tab"] {
+  color: #4a5568;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: none;
+  background: transparent;
+  border-radius: 9px;
+  transition:
+    box-shadow 150ms var(--ind-ease-press),
+    color      150ms var(--ind-ease-press),
+    transform  100ms var(--ind-ease-press);
+}
+
+[data-theme-name="industrial"] [role="tab"]:hover:not([aria-selected="true"]) {
+  color: #1e2228;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme-name="industrial"] [role="tab"][aria-selected="true"],
+[data-theme-name="industrial"] [role="tab"][data-state="active"] {
+  background: #e0e5ec;
+  color: #1e2228;
+  font-weight: 700;
+  box-shadow:
+    4px 4px 8px rgba(163, 177, 198, 0.6),
+    -4px -4px 8px rgba(255, 255, 255, 0.55);
+  transform: none;
+}
+
+/* FilterGroup label text */
+[data-theme-name="industrial"] [class*="FilterGroup"] label,
+[data-theme-name="industrial"] [class*="filter-group"] label {
+  color: #374151;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ================================================================== */
+/*  18. DIALOG / MODAL — Elevated floating panel                       */
+/* ================================================================== */
+
+/* Backdrop — frosted chassis tint */
+[data-theme-name="industrial"] [role="dialog"],
+[data-theme-name="industrial"] [data-radix-dialog-overlay] {
+  backdrop-filter: blur(4px);
+  background: rgba(163, 177, 198, 0.4) !important;
+}
+
+/* Dialog panel */
+[data-theme-name="industrial"] [data-radix-dialog-content],
+[data-theme-name="industrial"] [role="dialog"] > div {
+  background: #e0e5ec;
+  box-shadow: var(--ind-shadow-floating);
+  border: none !important;
+  border-radius: 20px;
+  color: #1e2228;
+}
+
+/* Dialog title */
+[data-theme-name="industrial"] [role="dialog"] h2 {
+  color: #1e2228;
+  font-weight: 700;
+}
+
+/* Dialog description */
+[data-theme-name="industrial"] [role="dialog"] p {
+  color: #374151;
+}
+
+/* ================================================================== */
+/*  19. LIST ITEMS — Hover + selection states                          */
+/* ================================================================== */
+
+[data-theme-name="industrial"] [role="listitem"],
+[data-theme-name="industrial"] [class*="ListItem"] {
+  color: #1e2228;
+  transition: background 150ms var(--ind-ease-press);
+}
+
+[data-theme-name="industrial"] [role="listitem"]:hover,
+[data-theme-name="industrial"] [class*="ListItem"]:hover {
+  background: rgba(163, 177, 198, 0.2);
+}
+
+/* ================================================================== */
+/*  20. SESSION ROWS — Visible separators + readable text              */
+/*  SessionRow uses border-border = transparent in industrial theme.   */
+/*  Override to show neumorphic groove dividers.                       */
+/* ================================================================== */
+
+/* Session row container — cast a subtle inset separator on border-top */
+[data-theme-name="industrial"] [class*="max-w-full"][class*="min-w-0"][class*="overflow-hidden"][class*="border"] {
+  border: none !important;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  box-shadow: var(--ind-shadow-card);
+  background: #e0e5ec;
+}
+
+/* Session row hover */
+[data-theme-name="industrial"] [class*="cursor-pointer"]:hover {
+  background: rgba(163, 177, 198, 0.15) !important;
+}
+
+/* Selected session — orange left LED strip via box-shadow */
+[data-theme-name="industrial"] [class*="border-primary/40"] {
+  box-shadow:
+    var(--ind-shadow-card),
+    inset 3px 0 0 #ff4757 !important;
+}
+
+/* Active session — green left LED strip */
+[data-theme-name="industrial"] [class*="border-success/30"] {
+  box-shadow:
+    var(--ind-shadow-card),
+    inset 3px 0 0 #22c55e !important;
+}
+
+/* Session meta text — was text-muted-foreground which was too light */
+[data-theme-name="industrial"] [class*="text-muted-foreground"] {
+  color: #4a5568 !important;
+}
+
+/* Message bubble backgrounds on light theme */
+[data-theme-name="industrial"] [class*="bg-primary/10"] {
+  background: color-mix(in srgb, #ff4757 8%, #e0e5ec) !important;
+}
+
+[data-theme-name="industrial"] [class*="bg-success/10"] {
+  background: color-mix(in srgb, #22c55e 8%, #e0e5ec) !important;
+}
+
+[data-theme-name="industrial"] [class*="bg-warning/10"] {
+  background: color-mix(in srgb, #d97706 8%, #e0e5ec) !important;
+}
+
+[data-theme-name="industrial"] [class*="bg-muted"] {
+  background: #d1d9e6 !important;
+  color: #374151 !important;
+}
+
+/* ================================================================== */
+/*  21. MEMORY PRESSURE BANNER                                         */
+/*  Hardcoded dark-theme classes: text-red-300, text-amber-300 are     */
+/*  light-mode incompatible. Override to accessible colours.           */
+/* ================================================================== */
+
+/* Critical (red) variant */
+[data-theme-name="industrial"] [data-testid="memory-pressure-banner"][class*="text-red-300"],
+[data-theme-name="industrial"] [data-testid="memory-pressure-banner"].text-red-300 {
+  color: #7f1d1d !important;
+}
+
+/* Override the banner classes directly — they use conditional classNames */
+[data-theme-name="industrial"] [role="alert"][class*="bg-red-500"] {
+  background: color-mix(in srgb, #c53030 12%, #e0e5ec) !important;
+  border-color: rgba(197, 48, 48, 0.3) !important;
+  color: #7f1d1d !important;
+}
+
+[data-theme-name="industrial"] [role="alert"][class*="bg-amber-500"] {
+  background: color-mix(in srgb, #d97706 10%, #e0e5ec) !important;
+  border-color: rgba(217, 119, 6, 0.3) !important;
+  color: #78350f !important;
+}
+
+/* ================================================================== */
+/*  22. LOGS PAGE — Log line colours on light background               */
+/*  Dark themes use light text (text-red-300). Must flip for chassis.  */
+/* ================================================================== */
+
+/* Log line text — remap to dark-on-light accessible colours */
+[data-theme-name="industrial"] .text-text-tertiary {
+  color: #4a5568 !important;  /* debug lines — was near-invisible */
+}
+
+[data-theme-name="industrial"] .text-foreground {
+  color: #1e2228 !important;  /* info lines */
+}
+
+[data-theme-name="industrial"] .text-warning {
+  color: #92400e !important;  /* warning lines — dark amber */
+}
+
+[data-theme-name="industrial"] .text-destructive {
+  color: #7f1d1d !important;  /* error lines — dark red */
+}
+
+/* Log viewer area — recessed code panel */
+[data-theme-name="industrial"] [class*="font-mono-ui"][class*="overflow-auto"] {
+  background: #d1d9e6;
+  box-shadow: var(--ind-shadow-recessed);
+  border-radius: 0 0 16px 16px;
+  color: #1e2228;
+}
+
+/* ================================================================== */
+/*  23. PAGE HEADER BAR — breadcrumb + action area                     */
+/* ================================================================== */
+
+/* Page header top bar */
+[data-theme-name="industrial"] [class*="PageHeader"],
+[data-theme-name="industrial"] header[class*="border-b"] {
+  background: #e0e5ec;
+  border-bottom: none !important;
+  box-shadow: 0 2px 0 rgba(163, 177, 198, 0.45), 0 3px 0 rgba(255, 255, 255, 0.55);
+}
+
+/* Page title / breadcrumb text */
+[data-theme-name="industrial"] [class*="PageHeader"] h1,
+[data-theme-name="industrial"] [class*="page-title"] {
+  color: #1e2228;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* ================================================================== */
+/*  24. PAGE-LEVEL SURFACE SCOPE                                       */
+/* ================================================================== */
+
+[data-theme-name="industrial"] [data-neu="true"] {
+  background: #e0e5ec;
+  color: #1e2228;
+}
+
+/* Inline code / kbd blocks */
+[data-theme-name="industrial"] code:not(pre code),
+[data-theme-name="industrial"] kbd {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.8125em;
+  background: #d1d9e6;
+  padding: 0.1em 0.4em;
+  border-radius: 6px;
+  box-shadow:
+    inset 2px 2px 4px rgba(163, 177, 198, 0.5),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.5);
+  color: #cc1f2e;
+}
+
+/* Pre / code blocks */
+[data-theme-name="industrial"] pre {
+  background: #d1d9e6;
+  box-shadow: var(--ind-shadow-recessed);
+  border-radius: 12px;
+  border: none;
+  color: #1e2228;
+}
+
+/* ================================================================== */
+/*  25. SEPARATOR / DIVIDER                                            */
+/* ================================================================== */
+
+[data-theme-name="industrial"] hr,
+[data-theme-name="industrial"] [role="separator"] {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(163, 177, 198, 0.55) 15%,
+    rgba(163, 177, 198, 0.55) 85%,
+    transparent 100%
+  );
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* ================================================================== */
+/*  26. LOADING SPINNER — Orange accent ring                           */
+/* ================================================================== */
+
+[data-theme-name="industrial"] [class*="animate-spin"] {
+  border-top-color: #ff4757 !important;
+  filter: drop-shadow(0 0 4px rgba(255, 71, 87, 0.35));
+}
+
+/* ================================================================== */
+/*  27. TOAST NOTIFICATIONS — Mechanical alert pills                   */
+/* ================================================================== */
+
+[data-theme-name="industrial"] [role="status"],
+[data-theme-name="industrial"] [data-toast] {
+  background: #e0e5ec;
+  box-shadow: var(--ind-shadow-floating);
+  border: none;
+  border-radius: 12px;
+  color: #1e2228;
+}
+
+/* ================================================================== */
+/*  28. TABLE ELEMENTS — Found in SessionsPage, ModelsPage             */
+/* ================================================================== */
+
+[data-theme-name="industrial"] table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+[data-theme-name="industrial"] th {
+  color: #374151;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(163, 177, 198, 0.5);
+}
+
+[data-theme-name="industrial"] td {
+  color: #1e2228;
+  border-bottom: 1px solid rgba(163, 177, 198, 0.25);
+}
+
+[data-theme-name="industrial"] tr:hover td {
+  background: rgba(163, 177, 198, 0.1);
+}
+
+/* ================================================================== */
+/*  29. KEYFRAME ANIMATIONS                                             */
+/* ================================================================== */
+
+@keyframes ind-led-breathe {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 8px 2px rgba(255, 71, 87, 0.65);
+  }
+  50% {
+    opacity: 0.65;
+    box-shadow: 0 0 4px 1px rgba(255, 71, 87, 0.3);
+  }
+}
+
+@keyframes ind-led-breathe-green {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    opacity: 0.65;
+    box-shadow: 0 0 4px 1px rgba(34, 197, 94, 0.35);
+  }
+}
+
+@keyframes ind-led-breathe-amber {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 8px 2px rgba(217, 119, 6, 0.65);
+  }
+  50% {
+    opacity: 0.65;
+    box-shadow: 0 0 4px 1px rgba(217, 119, 6, 0.3);
+  }
+}
+
+@keyframes ind-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+    box-shadow: 4px 4px 8px #babecc, -4px -4px 8px #ffffff;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    box-shadow: var(--ind-shadow-card);
+  }
+}

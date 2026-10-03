@@ -1,0 +1,89 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+*.pyo
+
+# Virtual Environments
+venv/
+venv*/
+ENV/
+env/
+.venv/
+
+# Node / Web Build
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.build-tools/
+.next/
+dist/
+out/
+build/
+.turbo/
+
+# AI Model Files & Large Binaries
+*.gguf
+*.bin
+*.pt
+*.pth
+*.safetensors
+backend/models/
+backend/bin/
+
+# Keep small wake word ONNX models
+*.onnx
+!**/wakewords/*.onnx
+
+# Runtime Storage, Caches & Logs
+.indra-runtime/
+logs/
+*.log
+audio_cache/
+image_cache/
+.curator_backups/
+sandboxes/
+cache/
+lsp/
+SIH-26/state/
+spawn-trees/
+pending_messages/
+pairing/
+
+# SQLite & Runtime State
+*.db-shm
+*.db-wal
+*.db-journal
+*.sqlite-journal
+kanban.db
+projects.db
+state.db
+verification_evidence.db
+hermes.db
+workbench.db
+.hermes_history
+gateway_state.json
+spawn-ledger.json
+processes.json
+hermes-index.json
+
+# Environment & Credentials (keep .env.example)
+.env
+.env.local
+.env.production
+!.env.example
+
+# IDE & OS Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.bak

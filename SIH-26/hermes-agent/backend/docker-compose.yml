@@ -1,0 +1,94 @@
+# ── profiles: small (laptop), medium, large (cluster) ────────────────────────
+# Usage: docker compose --profile small up -d
+# Or set WORKBENCH_PROFILE env var.
+
+x-gpu-deploy: &gpu-deploy
+  resources:
+    reservations:
+      devices:
+        - driver: nvidia
+          count: all
+          capabilities: [gpu]
+
+services:
+
+  # ── nginx TLS termination ──────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - gateway
+    restart: unless-stopped
+
+  # ── FastAPI gateway ────────────────────────────────────────────────────────
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      uvicorn server.app:app
+      --host 0.0.0.0 --port 8000
+      --workers 1 --log-level info
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./config:/app/config
+      - ./certs:/app/certs
+    environment:
+      - WORKBENCH_PROFILE=${WORKBENCH_PROFILE:-small}
+    env_file: .env
+    deploy:
+      <<: *gpu-deploy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ── Qdrant vector store ────────────────────────────────────────────────────
+  qdrant:
+    image: qdrant/qdrant:v1.9.2
+    # NOTE: qdrant/qdrant does NOT make outbound calls at runtime.
+    # Verify before upgrading: https://github.com/qdrant/qdrant
+    volumes:
+      - ./data/qdrant:/qdrant/storage
+    ports:
+      - "127.0.0.1:6333:6333"
+    restart: unless-stopped
+
+  # ── llama-swap (GGUF hot-swap) ─────────────────────────────────────────────
+  llamaswap:
+    image: ghcr.io/mostlygeek/llama-swap:latest
+    # NOTE: llama-swap binary — verify no telemetry before deploying air-gapped.
+    # Source: https://github.com/mostlygeek/llama-swap
+    volumes:
+      - ./config/llama-swap.yaml:/config/llama-swap.yaml:ro
+      - ./models:/models:ro
+    ports:
+      - "127.0.0.1:8100:8100"
+    command: ["--config", "/config/llama-swap.yaml", "--port", "8100", "--watch-config"]
+    deploy:
+      <<: *gpu-deploy
+    restart: unless-stopped
+
+  # ── ComfyUI (image/video/audio generation) ────────────────────────────────
+  comfyui:
+    image: ghcr.io/ai-dock/comfyui:latest-cuda
+    # NOTE: verify this image makes no outbound calls at runtime.
+    volumes:
+      - ./models/comfyui:/opt/ComfyUI/models
+      - ./data/comfyui_output:/opt/ComfyUI/output
+      - ./config/workflows:/opt/ComfyUI/workflows:ro
+    ports:
+      - "127.0.0.1:8400:8188"
+    environment:
+      - CLI_ARGS=--listen 0.0.0.0 --port 8188 --disable-auto-launch
+    deploy:
+      <<: *gpu-deploy
+    restart: unless-stopped

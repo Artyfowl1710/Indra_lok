@@ -1,0 +1,6 @@
+Module,Latency (ms),Memory (MB),Success Rate (%)
+LLM Server,42.5,3850,99.8
+WebSocket Gateway,1.2,45,100.0
+PDF Generator,380.0,78,100.0
+Presentation Builder,450.0,92,100.0
+Excel Builder,210.0,64,100.0

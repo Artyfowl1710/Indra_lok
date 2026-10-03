@@ -1,0 +1,21 @@
+FROM nikolaik/python-nodejs:python3.11-nodejs20
+
+# Built while connected, then run with Docker's network disabled. Keep all
+# document dependencies in the image so an agent never needs runtime pip.
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    MPLBACKEND=Agg
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       fonts-dejavu-core poppler-utils tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY docker/requirements-indra-documents.txt /tmp/requirements-indra-documents.txt
+RUN python -m pip install --no-cache-dir -r /tmp/requirements-indra-documents.txt \
+    && python -m pip check \
+    && rm /tmp/requirements-indra-documents.txt
+
+COPY docker/smoke_indra_documents.py /opt/indra/smoke_indra_documents.py
+
+WORKDIR /workspace

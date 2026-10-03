@@ -1,0 +1,9 @@
+{
+  "last_report_path": "C:\\Users\\Kaivalya\\Downloads\\SIH-26-main\\SIH-26-main\\SIH-26\\logs\\curator\\20260930-174400",
+  "last_run_at": "2026-09-30T17:44:00.787101+00:00",
+  "last_run_duration_seconds": 6.961965,
+  "last_run_summary": "auto: no changes; llm: skipped (consolidation off)",
+  "last_run_summary_shown_at": null,
+  "paused": false,
+  "run_count": 3
+}

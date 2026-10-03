@@ -1,0 +1,20 @@
+INDRA DEMO — MAINTENANCE WORK LOG
+Site: North Plant | Reporting date: 2026-09-29
+Prepared for: Excel extraction and summary demo
+
+Field order: Work Order | Reported | Equipment | Issue | Priority | Assigned To | Status | Due Date | Completed Date | Estimated Cost (INR)
+
+WO-2601 | 2026-09-18 | Cooling Pump CP-04 | Seal leakage at outlet flange | High | A. Patil | Completed | 2026-09-20 | 2026-09-20 | 18500
+WO-2602 | 2026-09-19 | Conveyor CV-12 | Belt misalignment and vibration | Medium | R. Sharma | Open | 2026-09-25 | - | 9200
+WO-2603 | 2026-09-20 | Boiler BL-02 | Pressure sensor calibration drift | Critical | S. Iyer | Completed | 2026-09-21 | 2026-09-21 | 12400
+WO-2604 | 2026-09-21 | Compressor AC-07 | Unusual bearing temperature | High | P. Desai | In Progress | 2026-09-27 | - | 26800
+WO-2605 | 2026-09-22 | Valve XV-19 | Actuator fails to close fully | Medium | A. Patil | Completed | 2026-09-26 | 2026-09-25 | 7600
+WO-2606 | 2026-09-23 | Generator DG-03 | Battery voltage below threshold | Low | N. Kulkarni | Open | 2026-10-02 | - | 5400
+WO-2607 | 2026-09-24 | Heat Exchanger HX-05 | Fouling suspected; reduced flow | High | S. Iyer | Open | 2026-10-01 | - | 31500
+WO-2608 | 2026-09-25 | Fire Pump FP-01 | Auto-start test failed | Critical | R. Sharma | In Progress | 2026-09-28 | - | 14200
+WO-2609 | 2026-09-26 | Lighting Panel LP-08 | Two indicator lamps failed | Low | N. Kulkarni | Completed | 2026-09-29 | 2026-09-28 | 1800
+WO-2610 | 2026-09-27 | Water Tank TK-06 | Level transmitter intermittent | Medium | P. Desai | Open | 2026-10-03 | - | 6800
+
+Summary check (as of 2026-09-29): 10 total jobs; 4 completed; 4 open; 2 in progress; 3 overdue unfinished jobs (WO-2602, WO-2604, WO-2608). Priority totals: Critical 2, High 3, Medium 3, Low 2.
+
+Note: This is fictional test data. A dash in Completed Date means the job is not complete. Estimated Cost is a planning estimate, not actual spend.
