@@ -24,12 +24,18 @@ type PendingApproval = {
   reason?: string;
   choices?: string[];
 };
+type ClarifyQuestionItem = {
+  qid: string;
+  question: string;
+  choices?: string[];
+  multiSelect?: boolean;
+};
 type PendingClarify = {
   requestId: string;
   question?: string;
   choices?: string[];
   multiSelect?: boolean;
-  questions?: Array<{ qid: string; question: string; choices?: string[]; multi_select?: boolean }>;
+  questions?: ClarifyQuestionItem[];
 };
 type SpeechResult = { resultIndex: number; results: ArrayLike<ArrayLike<{ transcript: string }>> };
 interface BrowserSpeechRecognition {
@@ -323,20 +329,55 @@ export default function ConversationPage({ isActive = true }: { isActive?: boole
       if (!belongs(event)) return;
       setPendingApproval((current) => current?.requestId === event.payload?.request_id ? null : current);
     });
-    const offClarifyReq = client.on<{
-      request_id?: string;
-      question?: string;
-      choices?: string[];
-      multi_select?: boolean;
-      questions?: Array<{ qid: string; question: string; choices?: string[]; multi_select?: boolean }>;
-    }>("clarify.request", (event) => {
+    const offClarifyReq = client.on<any>("clarify.request", (event) => {
       if (!belongs(event) || !event.payload?.request_id) return;
+      const raw = event.payload;
+
+      // Normalize any batch questions array
+      const rawList = Array.isArray(raw.questions) ? raw.questions : [];
+      const normalizedQuestions: ClarifyQuestionItem[] = rawList
+        .map((q: any, idx: number) => {
+          const text = typeof q === "string" ? q : (q?.question || q?.prompt || q?.text || q?.message || "");
+          const rawChoices = Array.isArray(q?.choices) ? q.choices : [];
+          return {
+            qid: typeof q?.qid === "string" && q.qid ? q.qid : `q${idx}`,
+            question: String(text).trim(),
+            choices: rawChoices.filter((c: unknown) => typeof c === "string" && (c as string).trim()),
+            multiSelect: Boolean(q?.multi_select),
+          };
+        })
+        .filter((q: ClarifyQuestionItem) => Boolean(q.question));
+
+      // Resolve main question text with multi-field fallback
+      let mainQuestion = "";
+      if (typeof raw.question === "string" && raw.question.trim()) {
+        mainQuestion = raw.question.trim();
+      } else if (typeof raw.prompt === "string" && raw.prompt.trim()) {
+        mainQuestion = raw.prompt.trim();
+      } else if (typeof raw.text === "string" && raw.text.trim()) {
+        mainQuestion = raw.text.trim();
+      } else if (typeof raw.message === "string" && raw.message.trim()) {
+        mainQuestion = raw.message.trim();
+      } else if (normalizedQuestions.length === 1) {
+        mainQuestion = normalizedQuestions[0].question;
+      } else if (normalizedQuestions.length > 1) {
+        mainQuestion = normalizedQuestions.map((q, i) => `${i + 1}. ${q.question}`).join("\n");
+      }
+
+      // Resolve choices
+      let mainChoices: string[] | undefined = undefined;
+      if (Array.isArray(raw.choices) && raw.choices.length > 0) {
+        mainChoices = raw.choices.filter((c: unknown) => typeof c === "string" && (c as string).trim());
+      } else if (normalizedQuestions.length === 1 && normalizedQuestions[0].choices && normalizedQuestions[0].choices.length > 0) {
+        mainChoices = normalizedQuestions[0].choices;
+      }
+
       setPendingClarify({
-        requestId: event.payload.request_id,
-        question: event.payload.question,
-        choices: event.payload.choices,
-        multiSelect: event.payload.multi_select,
-        questions: event.payload.questions,
+        requestId: raw.request_id,
+        question: mainQuestion,
+        choices: mainChoices,
+        multiSelect: Boolean(raw.multi_select || (normalizedQuestions.length === 1 && normalizedQuestions[0].multiSelect)),
+        questions: normalizedQuestions,
       });
     });
     const offClarifyExpire = client.on<{ request_id?: string }>("clarify.expire", (event) => {
@@ -416,17 +457,21 @@ export default function ConversationPage({ isActive = true }: { isActive?: boole
     }
   }, [pendingApproval]);
 
-  const handleRespondClarify = useCallback(async (answer: string) => {
+  const handleRespondClarify = useCallback(async (answer: string, questionId?: string) => {
     if (!pendingClarify || !clientRef.current || !sessionRef.current) return;
     const rid = pendingClarify.requestId;
     setPendingClarify(null);
     setClarifyAnswer("");
     try {
-      await clientRef.current.request("clarify.respond", {
+      const payload: Record<string, unknown> = {
         session_id: sessionRef.current,
         request_id: rid,
         answer,
-      });
+      };
+      if (questionId) {
+        payload.question_id = questionId;
+      }
+      await clientRef.current.request("clarify.respond", payload);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Failed to answer question.");
     }
@@ -684,22 +729,64 @@ export default function ConversationPage({ isActive = true }: { isActive?: boole
         {/* Interactive Clarification / Question Card */}
         {pendingClarify && (
           <div className="indra-action-card indra-action-card--clarify" role="region" aria-label="Agent question">
-            <div className="flex items-start gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-500/20 text-sky-700">
-                <HelpCircle size={20} />
+            <div className="flex items-start gap-3.5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-500/20 text-sky-700 shadow-sm">
+                <HelpCircle size={22} />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-sm font-bold text-sky-950">Clarification Needed</h3>
-                  <span className="rounded-full bg-sky-200/80 px-2 py-0.5 text-[11px] font-bold text-sky-900">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-sky-950">Clarification Needed</h3>
+                    {pendingClarify.questions && pendingClarify.questions.length > 1 && (
+                      <span className="rounded-md bg-sky-100 px-2 py-0.5 text-[11px] font-semibold text-sky-800 border border-sky-300">
+                        {pendingClarify.questions.length} Questions
+                      </span>
+                    )}
+                  </div>
+                  <span className="rounded-full bg-sky-200/90 px-2.5 py-0.5 text-[11px] font-bold text-sky-900 border border-sky-300">
                     Input Required
                   </span>
                 </div>
-                <p className="mt-1 text-sm font-semibold text-sky-950">
-                  {pendingClarify.question || "The agent is asking for your input to continue:"}
-                </p>
-                {pendingClarify.choices && pendingClarify.choices.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
+
+                {/* Prominently visible question callout box */}
+                <div className="my-2.5 rounded-xl border border-sky-200 bg-white/95 p-3.5 shadow-sm">
+                  {pendingClarify.questions && pendingClarify.questions.length > 1 ? (
+                    <div className="space-y-3">
+                      {pendingClarify.questions.map((q, idx) => (
+                        <div key={q.qid} className="border-b border-sky-100 pb-2.5 last:border-b-0 last:pb-0">
+                          <p className="text-xs font-bold uppercase tracking-wider text-sky-700 mb-1">
+                            Question {idx + 1}
+                          </p>
+                          <p className="text-sm font-semibold text-slate-900 leading-relaxed whitespace-pre-wrap">
+                            {q.question}
+                          </p>
+                          {q.choices && q.choices.length > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {q.choices.map((choice) => (
+                                <button
+                                  key={choice}
+                                  type="button"
+                                  onClick={() => void handleRespondClarify(choice, q.qid)}
+                                  className="indra-action-choice-btn"
+                                >
+                                  {choice}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm font-bold text-slate-900 leading-relaxed whitespace-pre-wrap">
+                      {pendingClarify.question || pendingClarify.questions?.[0]?.question || "The agent is asking for your input to continue:"}
+                    </p>
+                  )}
+                </div>
+
+                {/* Pre-defined Choice options (for single or primary question) */}
+                {pendingClarify.choices && pendingClarify.choices.length > 0 && (!pendingClarify.questions || pendingClarify.questions.length <= 1) && (
+                  <div className="my-2.5 flex flex-wrap gap-2">
                     {pendingClarify.choices.map((choice) => (
                       <button
                         key={choice}
@@ -712,6 +799,8 @@ export default function ConversationPage({ isActive = true }: { isActive?: boole
                     ))}
                   </div>
                 )}
+
+                {/* Freeform Answer Submission Form */}
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -726,12 +815,13 @@ export default function ConversationPage({ isActive = true }: { isActive?: boole
                     placeholder="Type custom answer or instructions…"
                     value={clarifyAnswer}
                     onChange={(e) => setClarifyAnswer(e.target.value)}
-                    className="flex-1 rounded-xl border border-sky-300 bg-white px-3 py-2 text-xs text-slate-800 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none shadow-sm"
+                    className="flex-1 rounded-xl border border-sky-300 bg-white px-3.5 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none shadow-sm font-medium"
+                    autoFocus
                   />
                   <button
                     type="submit"
                     disabled={!clarifyAnswer.trim()}
-                    className="flex items-center gap-1.5 rounded-xl bg-sky-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-sky-500 disabled:opacity-40 transition-colors"
+                    className="flex items-center gap-1.5 rounded-xl bg-sky-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-sky-500 disabled:opacity-40 transition-colors"
                   >
                     <Send size={13} /> Submit
                   </button>
