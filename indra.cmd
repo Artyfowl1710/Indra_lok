@@ -7,13 +7,11 @@ set "HERMES_NODE=%INDRA_ROOT%.indra-runtime\node-v24.11.0-win-x64\node.exe"
 set "PATH=%INDRA_ROOT%.indra-runtime\node-v24.11.0-win-x64;%PATH%"
 
 if /I "%~1"=="set-server" (
-  shift
-  "%INDRA_ROOT%venv\Scripts\python.exe" "%INDRA_ROOT%configure_remote_server.py" %*
+  "%INDRA_ROOT%venv\Scripts\python.exe" "%INDRA_ROOT%configure_remote_server.py" %2 %3 %4 %5 %6 %7 %8 %9
   exit /b %errorlevel%
 )
 if /I "%~1"=="set-context" (
-  shift
-  "%INDRA_ROOT%venv\Scripts\python.exe" "%INDRA_ROOT%configure_remote_server.py" --set-context %*
+  "%INDRA_ROOT%venv\Scripts\python.exe" "%INDRA_ROOT%configure_remote_server.py" --set-context %2
   exit /b %errorlevel%
 )
 if /I "%~1"=="" goto ensure_backend
